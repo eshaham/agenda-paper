@@ -1,8 +1,12 @@
-const { devices, init } = require('epaperjs');
+const isPi = require('detect-rpi');
 
 module.exports = function(app) {
-  console.log('initializing epaper');
-  init(devices.waveshare7in5v2, {
-    skipWebServer: true,
-  });
+  if (isPi()) {
+    const { devices, init } = require('epaperjs');
+
+    console.log('initializing epaper');
+    init(devices.waveshare7in5v2, {
+      skipWebServer: true,
+    });
+  }
 };
