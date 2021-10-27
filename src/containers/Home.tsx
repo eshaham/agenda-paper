@@ -15,12 +15,16 @@ const Home = () => {
       const isAuthenticated = await verifyAuth();
       if (isAuthenticated) {
         setIsLoggedIn(true);
-        const ws = new WebSocket('ws://localhost:8080');
-        ws.addEventListener('open', () => {
-            ws.send('render');
-        });
       }
       setLoading(false);
+
+      const ws = new WebSocket('ws://localhost:8080');
+      ws.addEventListener('open', () => {
+        ws.send('render');
+      });
+      ws.addEventListener('refresh', () => {
+        ws.send('render');
+      });
     }
 
     init();
