@@ -1,12 +1,19 @@
-const isPi = require('detect-rpi');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = function(app) {
-  if (isPi()) {
-    const { devices, init } = require('epaperjs');
+  app.use(
+    '/api/auth/login',
+    (req, res) => {
+      const queryStr = Object.keys(req.query).map((p) => `${p}=${req.query[p]}`).join('&');
+      res.redirect(`http://localhost:8080/api/auth/login${req.path}?${queryStr}`);
+    },
+  );
 
-    console.log('initializing epaper');
-    init(devices.waveshare7in5v2, {
-      skipWebServer: true,
-    });
-  }
+  app.use(
+    ['/api'],
+    createProxyMiddleware({
+      target: 'http://localhost:8080',
+      changeOrigin: true,
+    }),
+  );
 };
