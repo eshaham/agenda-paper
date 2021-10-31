@@ -1,7 +1,15 @@
 {
   "name": "agenda-paper",
   "version": "0.1.0",
-  "private": true,
+  "description": "Show your daily agenda on an ePaper display",
+  "license": "MIT",
+  "repository": "eshaham/agenda-paper",
+  "keywords": [
+    "ePaper",
+    "ePaper.js",
+    "agenda",
+    "calendar"
+  ],
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
@@ -45,9 +53,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start": "concurrently npm:start:server npm:start:client",
-    "start:server": "cd server && ts-node-dev --respawn --transpile-only server.ts",
+    "start:server": "cd server && PORT=8080 ts-node-dev --respawn --transpile-only index.ts",
     "start:client": "react-scripts start",
-    "serve": "npm run build && PORT=3000 node ./build/server/server.js"
+    "serve": "npm run build && node ./build/server/index.js"
+  },
+  "bin": {
+    "agenda-paper": "./build/server/bin/index.js"
   },
   "eslintConfig": {
     "extends": [
