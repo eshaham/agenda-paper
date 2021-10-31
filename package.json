@@ -11,6 +11,10 @@
     "calendar"
   ],
   "dependencies": {
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@material-ui/system": "^4.12.1",
+    "@mui/material": "^5.0.6",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -49,7 +53,7 @@
   "scripts": {
     "build": "npm run build:client && npm run build:server",
     "build:client": "BUILD_PATH='./build/client' react-scripts build",
-    "build:server": "cd server && tsc && cp ../.env ../build",
+    "build:server": "cd server && tsc",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start": "concurrently npm:start:server npm:start:client",

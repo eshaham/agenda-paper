@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './Home.css';
+import { Box, Typography } from '@mui/material';
 
 async function verifyAuth() {
   const response = await fetch('/api/auth/verify-token');
@@ -32,22 +32,25 @@ const Home = () => {
   }
 
   if (!isLoggedIn) {
-    const loginUrl = 'http://localhost:3000/login';
     return (
-      <p>
-        To log in, please go to <a href={loginUrl}>{loginUrl}</a> on the raspbian desktop
-      </p>
+      <Box display="flex" alignItems="center" justifyContent="center" textAlign="center">
+        <Typography variant="h3">
+          To set this up, please go to
+          <br />
+          http://localhost:3000/setup
+          <br />
+          using the browser on the raspbian desktop
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="Home">
-      <header className="Home-header">
-        <p>
-          This is a working Home
-        </p>
-      </header>
-    </div>
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Typography variant="h1">
+        This is Home
+      </Typography>
+    </Box>
   );
 };
 
