@@ -1,4 +1,5 @@
-const { google } = require('googleapis');
+import { google } from 'googleapis';
+import { getEnvVariableOrDie } from '../helpers/env.helper';
 
 const SITE_URL = 'http://localhost:3000';
 const API_URL = `${SITE_URL}/api`;
@@ -21,30 +22,34 @@ function buildGoogleOptions() {
 }
 
 function createClient() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  const client = new google.auth.OAuth2(clientId, clientSecret, LOGIN_CALLBACK_URL);
+  const GOOGLE_CLIENT_ID = getEnvVariableOrDie('GOOGLE_CLIENT_ID');
+  const GOOGLE_CLIENT_SECRET = getEnvVariableOrDie('GOOGLE_CLIENT_SECRET');
+
+  const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, LOGIN_CALLBACK_URL);
   return client;
 }
 
-exports.createAuthUrl = () => {
+export const createAuthUrl = () => {
   const options = buildGoogleOptions();
   const client = createClient();
   const url = client.generateAuthUrl(options);
   return url;
-}
+};
 
-exports.convertCodeToRefreshToken = async (code) => {
+export const convertCodeToRefreshToken = async (code: string) => {
   let refreshToken;
+  const client = createClient();
   try {
-    const client = createClient();
     const { tokens } = await client.getToken(code);
-    if (tokens.error) {
-      throw new Error('failed to create tokens\n', tokens.error);
-    }
     refreshToken = tokens.refresh_token;
   } catch (e) {
-    console.error(`failed to convert code to token - status: ${e.response?.status}, error: ${e.response?.data?.error}, description: ${e.response?.data?.error_description}\n`, e);
+    const { response: { status, data } = {} } = <{
+      response?:{
+        status: number,
+        data?: { error: string, error_description: string },
+      },
+    }>e;
+    console.error(`failed to convert code to token - status: ${status || ''}, error: ${data?.error || ''}, description: ${data?.error_description || ''}\n`, e);
     throw e;
   }
 

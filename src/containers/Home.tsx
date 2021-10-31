@@ -18,14 +18,11 @@ const Home = () => {
       }
       setLoading(false);
 
-      const ws = new WebSocket('ws://localhost:8080');
+      const ws = new WebSocket('ws://localhost:8081');
       ws.addEventListener('open', () => {
         ws.send('render');
       });
-      ws.addEventListener('refresh', () => {
-        ws.send('render');
-      });
-    }
+    };
 
     init();
   }, []);
@@ -35,7 +32,7 @@ const Home = () => {
   }
 
   if (!isLoggedIn) {
-    const loginUrl = 'http://localhost:3000/login'
+    const loginUrl = 'http://localhost:3000/login';
     return (
       <p>
         To log in, please go to <a href={loginUrl}>{loginUrl}</a> on the raspbian desktop
@@ -52,6 +49,6 @@ const Home = () => {
       </header>
     </div>
   );
-}
+};
 
 export default Home;
