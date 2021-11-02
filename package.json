@@ -1,6 +1,6 @@
 {
   "name": "agenda-paper",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Show your daily agenda on an ePaper display",
   "license": "MIT",
   "repository": "eshaham/agenda-paper",
