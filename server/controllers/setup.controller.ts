@@ -6,20 +6,18 @@ import { APRequest } from '../requests-types';
 import { initializePayload } from '../middlewares/general.middleware';
 import { updateEnvFile } from '../helpers/env.helper';
 
-const loadVariables = () => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { payload } = <APRequest>req;
+const loadVariables = () => (req: Request, res: Response, next: NextFunction) => {
+  const { payload } = <APRequest>req;
 
-    const clientId = process.env.GOOGLE_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const authSecret = process.env.AUTH_SECRET;
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const authSecret = process.env.AUTH_SECRET;
 
-    payload.clientId = clientId;
-    payload.clientSecret = clientSecret;
-    payload.authSecret = authSecret;
+  payload.clientId = clientId;
+  payload.clientSecret = clientSecret;
+  payload.authSecret = authSecret;
 
-    next();
-  };
+  next();
 };
 
 export const getVariables = () => [
@@ -33,55 +31,51 @@ export const getVariables = () => [
   },
 ];
 
-const extractVariables = () => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { body, payload } = <APRequest>req;
-    const { clientId, clientSecret, authSecret } = body;
+const extractVariables = () => (req: Request, res: Response, next: NextFunction) => {
+  const { body, payload } = <APRequest>req;
+  const { clientId, clientSecret, authSecret } = body;
 
-    if (!clientId) {
-      const msg = 'clientId not provided';
-      console.info(msg);
-      return res.status(400).send(msg);
-    }
+  if (!clientId) {
+    const msg = 'clientId not provided';
+    console.info(msg);
+    return res.status(400).send(msg);
+  }
 
-    if (!clientSecret) {
-      const msg = 'clientSecret not provided';
-      console.info(msg);
-      return res.status(400).send(msg);
-    }
+  if (!clientSecret) {
+    const msg = 'clientSecret not provided';
+    console.info(msg);
+    return res.status(400).send(msg);
+  }
 
-    if (!authSecret) {
-      const msg = 'authSecret not provided';
-      console.info(msg);
-      return res.status(400).send(msg);
-    }
+  if (!authSecret) {
+    const msg = 'authSecret not provided';
+    console.info(msg);
+    return res.status(400).send(msg);
+  }
 
-    payload.clientId = clientId;
-    payload.clientSecret = clientSecret;
-    payload.authSecret = authSecret;
+  payload.clientId = clientId;
+  payload.clientSecret = clientSecret;
+  payload.authSecret = authSecret;
 
-    return next();
-  };
+  return next();
 };
 
-const saveVariables = () => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { payload } = <APRequest>req;
-    const { clientId, clientSecret, authSecret } = <{
-      clientId: string,
-      clientSecret: string,
-      authSecret: string,
-    }>payload;
+const saveVariables = () => (req: Request, res: Response, next: NextFunction) => {
+  const { payload } = <APRequest>req;
+  const { clientId, clientSecret, authSecret } = <{
+    clientId: string,
+    clientSecret: string,
+    authSecret: string,
+  }>payload;
 
-    process.env.GOOGLE_CLIENT_ID = clientId;
-    process.env.GOOGLE_CLIENT_SECRET = clientSecret;
-    process.env.AUTH_SECRET = authSecret;
+  process.env.GOOGLE_CLIENT_ID = clientId;
+  process.env.GOOGLE_CLIENT_SECRET = clientSecret;
+  process.env.AUTH_SECRET = authSecret;
 
-    updateEnvFile(path.join(__dirname, '../../.env'), ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'AUTH_SECRET']);
-    dotEnv.config({ path: path.join(__dirname, '../../.env') });
+  updateEnvFile(path.join(__dirname, '../../.env'), ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'AUTH_SECRET']);
+  dotEnv.config({ path: path.join(__dirname, '../../.env') });
 
-    next();
-  };
+  next();
 };
 
 export const setupVariables = () => [

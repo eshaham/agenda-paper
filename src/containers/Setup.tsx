@@ -18,6 +18,8 @@ interface SetupState {
   clientId: string;
   clientSecret: string;
   authSecret: string;
+  variablesOpen: boolean;
+  otp: string;
   isProcessing: boolean;
   error?: string;
 }
@@ -63,6 +65,8 @@ const Setup = () => {
     clientId: '',
     clientSecret: '',
     authSecret: '',
+    variablesOpen: false,
+    otp: '',
     isProcessing: false,
   });
 
@@ -77,6 +81,7 @@ const Setup = () => {
           clientId: clientId ?? state.clientId,
           clientSecret: clientSecret ?? state.clientSecret,
           authSecret: authSecret ?? state.authSecret,
+          variablesOpen: !!clientId && !!clientSecret && !!authSecret,
         }));
       } else {
         setState((state) => ({
@@ -100,13 +105,23 @@ const Setup = () => {
     setState({ ...state, authSecret: event.target.value });
   };
 
+  const onOTPChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, otp: event.target.value });
+  };
+
   const onLoginClicked = async () => {
-    const { clientId, clientSecret, authSecret } = state;
-    if (clientId && clientSecret && authSecret) {
+    const {
+      clientId,
+      clientSecret,
+      authSecret,
+      otp,
+    } = state;
+
+    if (clientId && clientSecret && authSecret && otp) {
       setState((state) => ({ ...state, isProcessing: true }));
       const result = await setupVariables(clientId, clientSecret, authSecret);
       if (result.success) {
-        window.location.href = '/api/auth/login';
+        window.location.href = `/api/auth/login?otp=${otp}`;
       } else {
         setState((state) => ({ ...state, error: result.error, isProcessing: true }));
       }
@@ -118,6 +133,8 @@ const Setup = () => {
     clientId,
     clientSecret,
     authSecret,
+    variablesOpen,
+    otp,
     isProcessing,
     error
   } = state;
@@ -158,6 +175,16 @@ const Setup = () => {
             fullWidth
             margin="normal"
             onChange={onAuthSecretChanged}
+          />
+        </Box>
+        <Box>
+          <TextField
+            variant="standard"
+            label="ePaper OTP"
+            value={otp}
+            fullWidth
+            margin="normal"
+            onChange={onOTPChanged}
           />
         </Box>
         <Box mt={4}>

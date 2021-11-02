@@ -5,7 +5,7 @@ const SITE_URL = 'http://localhost:3000';
 const API_URL = `${SITE_URL}/api`;
 const LOGIN_CALLBACK_URL = `${API_URL}/auth/login/callback`;
 
-function buildGoogleOptions() {
+function buildGoogleOptions(state: Record<string, unknown>) {
   const scopes = [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/calendar.events.readonly',
@@ -16,6 +16,7 @@ function buildGoogleOptions() {
     access_type: 'offline',
     scope: scopes,
     prompt: prompts.join(' '),
+    state: JSON.stringify(state),
   };
 
   return options;
@@ -29,8 +30,8 @@ function createClient() {
   return client;
 }
 
-export const createAuthUrl = () => {
-  const options = buildGoogleOptions();
+export const createAuthUrl = (otp: string) => {
+  const options = buildGoogleOptions({ otp });
   const client = createClient();
   const url = client.generateAuthUrl(options);
   return url;

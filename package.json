@@ -26,6 +26,8 @@
     "detect-rpi": "^1.4.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-ws": "^5.0.2",
+    "generate-password": "^1.6.1",
     "googleapis": "^89.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
@@ -43,6 +45,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.13",
+    "@types/express-ws": "^3.0.1",
     "@types/jsonwebtoken": "^8.5.5",
     "@types/react-router-dom": "^5.3.2",
     "@types/ws": "^8.2.0",
@@ -57,7 +60,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start": "concurrently npm:start:server npm:start:client",
-    "start:server": "cd server && PORT=8080 ts-node-dev --respawn --transpile-only index.ts",
+    "start:server": "cd server && PORT=8080 NODE_ENV=development ts-node-dev --respawn --transpile-only index.ts",
     "start:client": "react-scripts start",
     "serve": "npm run build && node ./build/server/index.js"
   },
