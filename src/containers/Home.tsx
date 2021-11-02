@@ -64,6 +64,7 @@ const Home = () => {
           const isAssociated = await associateUser(otp, password);
           if (isAssociated) {
             setState((state) => ({ ...state, isLoggedIn: true }));
+            epaperSocket.send('render');
           }
         }
       };
