@@ -16,4 +16,15 @@ module.exports = function(app) {
       changeOrigin: true,
     }),
   );
+
+  app.use(
+    createProxyMiddleware(
+      '/ws',
+      {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        ws: true,
+        logLevel: 'debug',
+      }),
+  );
 };

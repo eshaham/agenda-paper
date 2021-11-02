@@ -1,53 +1,106 @@
 import { useEffect, useState } from 'react';
-import './Home.css';
+import { Box, Typography } from '@mui/material';
+
+interface HomeState {
+  isLoading: boolean;
+  isLoggedIn: boolean;
+  otp: number;
+}
+
+function getRandomInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 async function verifyAuth() {
   const response = await fetch('/api/auth/verify-token');
   return response.ok;
 }
 
+async function associateUser(otp: number, password: string) {
+  const body = { otp, password };
+  const request = {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+  const response = await fetch('/api/auth/associate', request);
+  return response.ok;
+}
+
 const Home = () => {
-  const [loading, setLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [state, setState] = useState<HomeState>({
+    isLoading: true,
+    isLoggedIn: false,
+    otp: getRandomInt(100000, 1000000),
+  });
+
+  const { isLoading, isLoggedIn, otp } = state;
 
   useEffect(() => {
     const init = async () => {
       const isAuthenticated = await verifyAuth();
       if (isAuthenticated) {
-        setIsLoggedIn(true);
+        setState((state) => ({ ...state, isLoggedIn: true }));
       }
-      setLoading(false);
+      setState((state) => ({ ...state, isLoading: false }));
 
-      const ws = new WebSocket('ws://localhost:8081');
-      ws.addEventListener('open', () => {
-        ws.send('render');
+      const epaperSocket = new WebSocket('ws://localhost:8081');
+      epaperSocket.addEventListener('open', () => {
+        epaperSocket.send('render');
       });
+
+      const serverSocket = new WebSocket('ws://localhost:3000/ws');
+      serverSocket.onopen = (e) => {
+        serverSocket.send(JSON.stringify({ otp }));
+      };
+      serverSocket.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'loggedIn') {
+          const { password } = data;
+          const isAssociated = await associateUser(otp, password);
+          if (isAssociated) {
+            setState((state) => ({ ...state, isLoggedIn: true }));
+            epaperSocket.send('render');
+          }
+        }
+      };
     };
 
-    init();
-  }, []);
+    if (isLoading && otp) {
+      init();
+    }
+  }, [otp, isLoading]);
 
-  if (loading) {
+  if (isLoading) {
     return null;
   }
 
   if (!isLoggedIn) {
-    const loginUrl = 'http://localhost:3000/login';
     return (
-      <p>
-        To log in, please go to <a href={loginUrl}>{loginUrl}</a> on the raspbian desktop
-      </p>
+      <Box display="flex" alignItems="center" justifyContent="center" textAlign="center">
+        <Typography variant="h3">
+          To set this up, please go to
+          <br />
+          http://localhost:3000/setup
+          <br />
+          using the browser on the raspbian desktop
+          <br />
+          {otp}
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="Home">
-      <header className="Home-header">
-        <p>
-          This is a working Home
-        </p>
-      </header>
-    </div>
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Typography variant="h1">
+        This is Home
+      </Typography>
+    </Box>
   );
 };
 
