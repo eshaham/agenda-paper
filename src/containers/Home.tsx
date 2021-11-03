@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+
 import NeedsSetup from '../components/NeedsSetup';
+import CenterScreen from '../components/CenterScreen';
 
 interface HomeState {
   isLoading: boolean;
@@ -85,11 +87,11 @@ const Home = () => {
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center">
+    <CenterScreen>
       <Typography variant="h1">
         This is Home
       </Typography>
-    </Box>
+    </CenterScreen>
   );
 };
 

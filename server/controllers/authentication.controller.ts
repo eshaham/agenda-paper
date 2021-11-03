@@ -51,7 +51,7 @@ const verifyCode = () => (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
-export const extractState = () => (
+const extractState = () => (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -67,6 +67,28 @@ export const extractState = () => (
   const { otp } = state;
 
   payload.otp = otp;
+
+  return next();
+};
+
+const verifySocketExists = () => (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { payload } = <APRequest>req;
+  const { otp } = <{ otp: string }>payload;
+
+  if (!otp) {
+    console.error('otp was not sent as part of the login state');
+    return res.status(400).send('missing otp param');
+  }
+
+  if (!openSockets[otp]) {
+    const msg = `unknown otp ${otp}`;
+    console.error(msg);
+    return res.status(400).send(openSockets[otp]);
+  }
 
   return next();
 };
@@ -148,6 +170,7 @@ export const authorizeUser = () => [
   initializePayload(),
   verifyCode(),
   extractState(),
+  verifySocketExists(),
   initGoogleClient(),
   storeRefreshTokenForSocket(),
   notifySocketAboutLogin(),

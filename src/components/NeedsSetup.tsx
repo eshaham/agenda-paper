@@ -1,14 +1,10 @@
 import { Box, Typography } from '@mui/material';
 
+import CenterScreen from './CenterScreen';
+
 const NeedsSetup = ({ otp }: { otp: number }) => {
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      textAlign="center"
-      minHeight="100vh"
-      lineHeight={2}
+    <CenterScreen fullHeight lineHeight={2}
     >
       <Box maxWidth={600}>
         <Typography variant="h4">
@@ -22,7 +18,7 @@ const NeedsSetup = ({ otp }: { otp: number }) => {
           {otp}
         </Typography>
       </Box>
-    </Box>
+    </CenterScreen>
   );
 };
 
