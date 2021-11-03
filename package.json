@@ -83,6 +83,7 @@
       "@typescript-eslint/semi": [
         "error"
       ],
+      "eol-last": ["error", "always"],
       "object-curly-spacing": [
         "error",
         "always"
