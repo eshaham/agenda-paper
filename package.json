@@ -23,6 +23,7 @@
     "@types/react": "^17.0.31",
     "@types/react-dom": "^17.0.10",
     "cookie-parser": "^1.4.5",
+    "dayjs": "^1.10.7",
     "detect-rpi": "^1.4.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
