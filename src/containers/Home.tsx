@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+
+import NeedsSetup from '../components/NeedsSetup';
+import CenterScreen from '../components/CenterScreen';
 
 interface HomeState {
   isLoading: boolean;
@@ -80,27 +83,15 @@ const Home = () => {
   }
 
   if (!isLoggedIn) {
-    return (
-      <Box display="flex" alignItems="center" justifyContent="center" textAlign="center">
-        <Typography variant="h3">
-          To set this up, please go to
-          <br />
-          http://localhost:3000/setup
-          <br />
-          using the browser on the raspbian desktop
-          <br />
-          {otp}
-        </Typography>
-      </Box>
-    );
+    return <NeedsSetup otp={otp} />;
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center">
+    <CenterScreen>
       <Typography variant="h1">
         This is Home
       </Typography>
-    </Box>
+    </CenterScreen>
   );
 };
 

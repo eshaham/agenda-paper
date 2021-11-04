@@ -60,7 +60,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prepublish": "npm run build",
-    "start": "concurrently npm:start:server npm:start:client",
+    "start": "concurrently --kill-others npm:start:server npm:start:client",
     "start:server": "cd server && PORT=8080 NODE_ENV=development ts-node-dev --respawn --transpile-only index.ts",
     "start:client": "react-scripts start",
     "serve": "npm run build && node ./build/server/index.js"
@@ -80,8 +80,37 @@
           "assertionStyle": "angle-bracket"
         }
       ],
+      "@typescript-eslint/member-delimiter-style": [
+        "error",
+        {
+          "multiline": {
+            "delimiter": "comma",
+            "requireLast": true
+          },
+          "singleline": {
+            "delimiter": "comma",
+            "requireLast": false
+          },
+          "overrides": {
+            "interface": {
+              "multiline": {
+                "delimiter": "semi",
+                "requireLast": true
+              }
+            }
+          }
+        }
+      ],
       "@typescript-eslint/semi": [
         "error"
+      ],
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ],
+      "eol-last": [
+        "error",
+        "always"
       ],
       "object-curly-spacing": [
         "error",
