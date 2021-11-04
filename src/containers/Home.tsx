@@ -119,8 +119,6 @@ const Home = () => {
     return <NeedsSetup otp={otp} />;
   }
 
-  console.log(calendarEvents);
-
   if (!calendarEvents) {
     return null;
   }
@@ -137,9 +135,23 @@ const Home = () => {
 
   return (
     <>
-      <CalendarEventDisplay calendarEvent={calendarEvents[0]} />
-      {calendarEvents[1] && <CalendarEventDisplay calendarEvent={calendarEvents[1]} />}
-      {calendarEvents[2] && <CalendarEventDisplay calendarEvent={calendarEvents[2]} />}
+      <CalendarEventDisplay calendarEvent={calendarEvents[0]} isShownFirst />
+      <Box display="flex">
+        <Box flex={1} minWidth={140} mr={4}>
+          <Box position="relative">
+            <img src="empty_calendar.png" alt="empty calendar" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+            <Box position="absolute" top="60%" left="50%" textAlign="center" style={{ transform: 'translate(-50%, -50%)' }}>
+              <Typography variant="h3">5</Typography>
+            </Box>
+          </Box>
+          <Box>
+          </Box>
+        </Box>
+        <Box flex={4} maxWidth="100%">
+          {calendarEvents[1] && <CalendarEventDisplay calendarEvent={calendarEvents[1]} />}
+          {calendarEvents[2] && <CalendarEventDisplay calendarEvent={calendarEvents[2]} />}
+        </Box>
+      </Box>
     </>
   );
 };
