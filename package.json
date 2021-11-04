@@ -80,11 +80,38 @@
           "assertionStyle": "angle-bracket"
         }
       ],
+      "@typescript-eslint/member-delimiter-style": [
+        "error",
+        {
+          "multiline": {
+            "delimiter": "comma",
+            "requireLast": true
+          },
+          "singleline": {
+            "delimiter": "comma",
+            "requireLast": false
+          },
+          "overrides": {
+            "interface": {
+              "multiline": {
+                "delimiter": "semi",
+                "requireLast": true
+              }
+            }
+          }
+        }
+      ],
       "@typescript-eslint/semi": [
         "error"
       ],
-      "comma-dangle": ["error", "always-multiline"],
-      "eol-last": ["error", "always"],
+      "comma-dangle": [
+        "error",
+        "always-multiline"
+      ],
+      "eol-last": [
+        "error",
+        "always"
+      ],
       "object-curly-spacing": [
         "error",
         "always"
