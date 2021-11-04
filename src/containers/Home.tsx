@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
