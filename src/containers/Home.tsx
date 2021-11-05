@@ -5,6 +5,7 @@ import { CalendarEvent } from '../types';
 import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
 import CalendarEventDisplay from '../components/CalendarEvent';
+import dayjs from 'dayjs';
 
 interface HomeState {
   isLoading: boolean;
@@ -12,6 +13,7 @@ interface HomeState {
   otp: number;
   epaperSocket?: WebSocket;
   calendarEvents?: Array<CalendarEvent>;
+  dayOfMonth: number;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -52,6 +54,7 @@ const Home = () => {
     isLoading: true,
     isLoggedIn: false,
     otp: getRandomInt(100000, 1000000),
+    dayOfMonth: dayjs().date(),
   });
 
   const {
@@ -60,6 +63,7 @@ const Home = () => {
     otp,
     calendarEvents,
     epaperSocket,
+    dayOfMonth,
   } = state;
 
   useEffect(() => {
@@ -135,19 +139,23 @@ const Home = () => {
 
   return (
     <>
-      <CalendarEventDisplay calendarEvent={calendarEvents[0]} isShownFirst />
+      <Box mb={4}>
+        <CalendarEventDisplay calendarEvent={calendarEvents[0]} isShownFirst />
+      </Box>
       <Box display="flex">
-        <Box flex={1} minWidth={140} mr={4}>
+        <Box width={110} flexShrink={0} mr={6}>
           <Box position="relative">
             <img src="empty_calendar.png" alt="empty calendar" style={{ maxWidth: '100%', maxHeight: '100%' }} />
             <Box position="absolute" top="60%" left="50%" textAlign="center" style={{ transform: 'translate(-50%, -50%)' }}>
-              <Typography variant="h3">5</Typography>
+              <Typography variant="h3">
+                {dayOfMonth}
+              </Typography>
             </Box>
           </Box>
           <Box>
           </Box>
         </Box>
-        <Box flex={4} maxWidth="100%">
+        <Box flex={6} overflow="hidden">
           {calendarEvents[1] && <CalendarEventDisplay calendarEvent={calendarEvents[1]} />}
           {calendarEvents[2] && <CalendarEventDisplay calendarEvent={calendarEvents[2]} />}
         </Box>
