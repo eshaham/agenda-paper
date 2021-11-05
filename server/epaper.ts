@@ -41,7 +41,8 @@ export async function startEpaper() {
       page.onConsoleLog(console.log);
 
       ws.on('message', async (message) => {
-        if (message?.type === 'render') {
+        const data = JSON.parse(message.toString());
+        if (data.type === 'render') {
           console.debug('loading saved cookies');
           const foundCookies = await loadCookies(page.browserPage, message.password);
 
