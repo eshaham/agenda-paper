@@ -42,20 +42,24 @@ export async function startEpaper() {
 
       ws.on('message', async (message) => {
         const data = JSON.parse(message.toString());
-        if (data.type === 'render') {
-          console.debug('loading saved cookies');
-          const foundCookies = await loadCookies(page.browserPage, message.password);
+        if (data.type === 'rende[r') {
+          if (message.password) {
+            console.debug('loading saved cookies');
+            const foundCookies = await loadCookies(page.browserPage, message.password);
 
-          if (foundCookies) {
-            console.debug('reploading browser');
-            await page.browserPage.reload();
+            if (foundCookies) {
+              console.debug('reploading browser');
+              await page.browserPage.reload();
+            }
           }
 
           console.info('starting epaper render');
           await page.display();
 
-          console.debug('saving cookies');
-          await saveCookies(page.browserPage, message.password);
+          if (message.password) {
+            console.debug('saving cookies');
+            await saveCookies(page.browserPage, message.password);
+          }
         }
       });
     };
