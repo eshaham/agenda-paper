@@ -8,7 +8,15 @@ const CenterScreen = ({ children, fullHeight, ...rest }: { children: ReactNode, 
   }
 
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" textAlign="center" minHeight={minHeight} {...rest}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      minHeight={minHeight}
+      {...rest}
+    >
       {children}
     </Box>
   );
