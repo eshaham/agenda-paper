@@ -6,6 +6,7 @@ import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
 import CalendarEventDisplay from '../components/CalendarEvent';
 import dayjs from 'dayjs';
+import DayOfMonthIcon from '../components/DayOfMonthIcon';
 
 interface HomeState {
   isLoading: boolean;
@@ -130,9 +131,14 @@ const Home = () => {
   if (!calendarEvents.length) {
     return (
       <CenterScreen>
-        <Typography variant="h1">
-          No upcoming events
-        </Typography>
+        <Box mb={6}>
+          <Typography variant="h1">
+            No upcoming events
+          </Typography>
+        </Box>
+        <Box>
+          <DayOfMonthIcon height={100} />
+        </Box>
       </CenterScreen>
     );
   }
@@ -144,16 +150,7 @@ const Home = () => {
       </Box>
       <Box display="flex">
         <Box width={110} flexShrink={0} mr={6}>
-          <Box position="relative">
-            <img src="empty_calendar.png" alt="empty calendar" style={{ maxWidth: '100%', maxHeight: '100%' }} />
-            <Box position="absolute" top="60%" left="50%" textAlign="center" style={{ transform: 'translate(-50%, -50%)' }}>
-              <Typography variant="h3">
-                {dayOfMonth}
-              </Typography>
-            </Box>
-          </Box>
-          <Box>
-          </Box>
+          <DayOfMonthIcon />
         </Box>
         <Box flex={6} overflow="hidden">
           {calendarEvents[1] && <CalendarEventDisplay calendarEvent={calendarEvents[1]} />}
