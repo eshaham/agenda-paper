@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
 import { APRequest } from '../requests-types';
 import { convertCodeToRefreshToken, createAuthUrl } from '../lib/google.api';
 import { getEnvVariableOrDie } from '../helpers/env.helper';
-import { openSockets } from '../open-sockets';
+import { openSockets, SocketData } from '../open-sockets';
 import { initializePayload } from '../middlewares/general.middleware';
 
 const SITE_URL = 'http://localhost:3000';
@@ -90,6 +90,8 @@ const verifySocketExists = () => (
     return res.status(400).send(openSockets[otp]);
   }
 
+  payload.socketData = openSockets[otp];
+
   return next();
 };
 
@@ -109,22 +111,23 @@ const initGoogleClient = () => async (req: Request, res: Response, next: NextFun
 
 const storeRefreshTokenForSocket = () => (req: Request, res: Response, next: NextFunction) => {
   const { payload } = <APRequest>req;
-  const { otp, googleRefreshToken } = <{ otp: string, googleRefreshToken: string }>payload;
-  openSockets[otp].googleRefreshToken = googleRefreshToken;
+  const { socketData, googleRefreshToken } = <{
+    socketData: SocketData,
+    googleRefreshToken: string,
+  }>payload;
+
+  socketData.googleRefreshToken = googleRefreshToken;
 
   next();
 };
 
 const notifySocketAboutLogin = () => (req: Request, res: Response, next: NextFunction) => {
   const { payload } = <APRequest>req;
-  const { otp } = <{ otp: string }>payload;
+  const { socketData } = <{ socketData: SocketData }>payload;
 
-  const socketData = openSockets[otp];
-  if (socketData) {
-    const { socket, password } = socketData;
-    const msg = { type: 'loggedIn', password };
-    socket.send(JSON.stringify(msg));
-  }
+  const { socket, password } = socketData;
+  const msg = { type: 'loggedIn', password };
+  socket.send(JSON.stringify(msg));
 
   next();
 };
@@ -133,13 +136,13 @@ const createSessionToken = () => (req: Request, res: Response, next: NextFunctio
   const AUTH_SECRET = getEnvVariableOrDie('AUTH_SECRET');
 
   const { payload } = <APRequest>req;
-  const { googleRefreshToken } = payload;
+  const { googleRefreshToken, password } = payload;
 
   const expirationMoment = moment().add(6, 'months');
 
   const maxAgeInMillis = expirationMoment.diff(moment());
   const maxAgeInSeconds = Math.round(maxAgeInMillis / 1000);
-  const tokenPayload = { googleRefreshToken };
+  const tokenPayload = { googleRefreshToken, password };
   const token = jwt.sign(tokenPayload, AUTH_SECRET, {
     expiresIn: maxAgeInSeconds,
   });
@@ -190,7 +193,7 @@ const extractCredentials = () => (req: Request, res: Response, next: NextFunctio
   }
 
   if (!password) {
-    const msg = 'clientSecret not provided';
+    const msg = 'password not provided';
     console.info(msg);
     return res.status(400).send(msg);
   }

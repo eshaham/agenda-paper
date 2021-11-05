@@ -5,7 +5,6 @@ import { CalendarEvent } from '../types';
 import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
 import CalendarEventDisplay from '../components/CalendarEvent';
-import dayjs from 'dayjs';
 import DayOfMonthIcon from '../components/DayOfMonthIcon';
 
 interface HomeState {
@@ -14,7 +13,6 @@ interface HomeState {
   otp: number;
   epaperSocket?: WebSocket;
   calendarEvents?: Array<CalendarEvent>;
-  dayOfMonth: number;
 }
 
 function getRandomInt(min: number, max: number) {
@@ -23,9 +21,14 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-async function verifyAuth() {
+async function verifyAuth(): Promise<{ isLoggedIn: boolean, password?: string }> {
   const response = await fetch('/api/auth/verify-token');
-  return response.ok;
+  if (response.ok) {
+    const data = response.json();
+    const { password } = await data;
+    return { isLoggedIn: true, password };
+  }
+  return { isLoggedIn: false };
 }
 
 async function associateUser(otp: number, password: string) {
@@ -55,7 +58,6 @@ const Home = () => {
     isLoading: true,
     isLoggedIn: false,
     otp: getRandomInt(100000, 1000000),
-    dayOfMonth: dayjs().date(),
   });
 
   const {
@@ -64,20 +66,18 @@ const Home = () => {
     otp,
     calendarEvents,
     epaperSocket,
-    dayOfMonth,
   } = state;
 
   useEffect(() => {
     const init = async () => {
-      const isAuthenticated = await verifyAuth();
-      if (isAuthenticated) {
-        setState((state) => ({ ...state, isLoggedIn: true }));
-      }
-      setState((state) => ({ ...state, isLoading: false }));
+      const result = await verifyAuth();
+      const { isLoggedIn, password } = result;
+      setState((state) => ({ ...state, isLoggedIn, isLoading: false }));
 
       const epaperSocket = new WebSocket('ws://localhost:8081');
       epaperSocket.addEventListener('open', () => {
-        epaperSocket.send('render');
+        const msg = { type: 'render', password };
+        epaperSocket.send(JSON.stringify(msg));
       });
       setState((state) => ({ ...state, epaperSocket }));
 
@@ -92,7 +92,8 @@ const Home = () => {
           const isAssociated = await associateUser(otp, password);
           if (isAssociated) {
             setState((state) => ({ ...state, isLoggedIn: true }));
-            epaperSocket.send('render');
+            const msg = { type: 'render', password };
+            epaperSocket.send(JSON.stringify(msg));
           }
         }
       };

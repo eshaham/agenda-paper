@@ -55,4 +55,9 @@ export const authenticate = () => [
   assignGoogleRefreshToken(),
 ];
 
-export const verifyToken = () => (req: Request, res: Response) => res.status(200).send();
+export const verifyToken = () => (req: Request, res: Response) => {
+  const { payload } = <APRequest>req;
+  const { password } = <{ password: string }>payload;
+
+  res.json({ password });
+};

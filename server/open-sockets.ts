@@ -1,8 +1,8 @@
 import WebSocket from 'ws';
 
-interface SocketData {
+export interface SocketData {
   socket: WebSocket;
-  password: string,
+  password: string;
   googleRefreshToken?: string;
 }
 
