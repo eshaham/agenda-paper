@@ -1,6 +1,6 @@
 {
   "name": "agenda-paper",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Show your daily agenda on an ePaper display",
   "license": "MIT",
   "repository": "eshaham/agenda-paper",
@@ -108,7 +108,9 @@
         "error",
         "always"
       ],
-      "no-multi-spaces": ["error"],
+      "no-multi-spaces": [
+        "error"
+      ],
       "object-curly-spacing": [
         "error",
         "always"
