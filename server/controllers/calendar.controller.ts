@@ -17,7 +17,15 @@ const fetchCalendarEvents = () => async (req: Request, res: Response, next: Next
     endMoment.toISOString(),
   );
 
-  payload.calendarEvents = calendarEvents;
+  if (calendarEvents) {
+    calendarEvents.forEach((event) => {
+      if (event.isPrivate) {
+        event.title = 'Private';
+      }
+    });
+
+    payload.calendarEvents = calendarEvents;
+  }
 
   next();
 };
