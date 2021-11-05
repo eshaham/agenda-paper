@@ -42,7 +42,7 @@ export async function startEpaper() {
 
       ws.on('message', async (message) => {
         const data = JSON.parse(message.toString());
-        if (data.type === 'rende[r') {
+        if (data.type === 'render') {
           if (message.password) {
             console.debug('loading saved cookies');
             const foundCookies = await loadCookies(page.browserPage, message.password);
