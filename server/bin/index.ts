@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 import dotEnv from 'dotenv';
 
-import { ENV_FILE_PATH } from './constants';
-import { startServer } from './server';
+import { ENV_FILE_PATH } from '../constants';
+import { startServer } from '../server';
 
 dotEnv.config({ path: ENV_FILE_PATH });
 
