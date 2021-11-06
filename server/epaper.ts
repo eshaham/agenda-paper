@@ -17,9 +17,8 @@ export async function startEpaper() {
     const render = (page: EpaperPage, ws: WebSocketServer) => {
       page.onConsoleLog(console.log);
 
-      ws.on('message', async (message) => {
-        const data = JSON.parse(message.toString());
-        if (data.type === 'render') {
+      ws.on('message', async (msg) => {
+        if (msg === 'render') {
           console.info('running epaper render');
           await page.display();
         }
