@@ -7,7 +7,7 @@ import Setup from './containers/Setup';
 
 function App() {
   return (
-    <Box minHeight="100vh" p={4}>
+    <Box minHeight="100vh">
       <Router>
         <Route path="/" exact component={Home} />
         <Route path="/setup" component={Setup} />

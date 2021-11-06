@@ -25,7 +25,7 @@ const SITE_URL = 'http://localhost:3000';
 const API_URL = `${SITE_URL}/api`;
 const LOGIN_CALLBACK_URL = `${API_URL}/auth/login/callback`;
 
-function buildGoogleOptions(state: Record<string, unknown>) {
+function buildGoogleOptions(state?: Record<string, unknown>) {
   const scopes = [
     'https://www.googleapis.com/auth/calendar.readonly',
     'https://www.googleapis.com/auth/calendar.events.readonly',
@@ -69,8 +69,8 @@ function logError(e: unknown, operation: string) {
   console.error(`error while making ${operation} google api call:\n`, e);
 }
 
-export const createAuthUrl = (otp: string) => {
-  const options = buildGoogleOptions({ otp });
+export const createAuthUrl = () => {
+  const options = buildGoogleOptions();
   const client = createClient();
   const url = client.generateAuthUrl(options);
   return url;

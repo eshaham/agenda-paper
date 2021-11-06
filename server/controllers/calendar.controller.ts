@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { NextFunction, Request, Response } from 'express';
 
 import { APRequest } from '../requests-types';
@@ -8,13 +8,13 @@ import { getEventsBetweenDateTimes } from '../lib/google.api';
 const fetchCalendarEvents = () => async (req: Request, res: Response, next: NextFunction) => {
   const { payload } = <APRequest>req;
   const { googleRefreshToken } = <{ googleRefreshToken: string }>payload;
-  const startMoment = moment();
-  const endMoment = moment(startMoment).endOf('day');
+  const currentTime = dayjs();
+  const endOfDay = dayjs(currentTime).endOf('day');
   const calendarEvents = await getEventsBetweenDateTimes(
     googleRefreshToken,
     'primary',
-    startMoment.toISOString(),
-    endMoment.toISOString(),
+    currentTime.toISOString(),
+    endOfDay.toISOString(),
   );
 
   if (calendarEvents) {

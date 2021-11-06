@@ -1,15 +1,14 @@
 import { Router } from 'express';
 
-import { authenticate, verifyToken } from './middlewares/authentication.middleware';
-import { loginUser, authorizeUser, associateUser } from './controllers/authentication.controller';
+import { loginUser, authorizeUser, isLoggedIn } from './controllers/authentication.controller';
 import { getCurrentCalendarEvents } from './controllers/calendar.controller';
+import { authenticate } from './middlewares/authentication.middleware';
 
 const router = Router();
 
+router.get('/auth/login-status', isLoggedIn());
 router.get('/auth/login', loginUser());
 router.get('/auth/login/callback', authorizeUser());
-router.post('/auth/associate', associateUser());
-router.get('/auth/verify-token', authenticate(), verifyToken());
 
 router.get('/calendar/events', authenticate(), getCurrentCalendarEvents());
 

@@ -1,23 +1,26 @@
 import { WebSocketServer } from 'ws';
+import { Page as BrowserPage } from 'puppeteer';
 import isPi from 'detect-rpi';
 
-interface Page {
+interface EpaperPage {
+  browserPage: BrowserPage;
   display(): Promise<void>;
   onConsoleLog(callback: () => void): void;
 }
 
 export async function startEpaper() {
   if (isPi()) {
-    console.log('starting epaper render');
     const { devices, init } = await import('epaperjs');
 
     console.log('initializing epaper');
 
-    const render = (page: Page, ws: WebSocketServer) => {
+    const render = (page: EpaperPage, ws: WebSocketServer) => {
       page.onConsoleLog(console.log);
 
       ws.on('message', async (message) => {
-        if (message === 'render') {
+        const data = JSON.parse(message.toString());
+        if (data.type === 'render') {
+          console.info('running epaper render');
           await page.display();
         }
       });
