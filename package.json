@@ -1,6 +1,6 @@
 {
   "name": "agenda-paper",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Show your daily agenda on an ePaper display",
   "license": "MIT",
   "repository": "eshaham/agenda-paper",
@@ -61,7 +61,9 @@
   "bin": {
     "agenda-paper": "./index.js"
   },
-  "files": ["build/**/*"],
+  "files": [
+    "build/**/*"
+  ],
   "eslintConfig": {
     "extends": [
       "react-app"
