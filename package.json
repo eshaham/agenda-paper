@@ -58,7 +58,7 @@
     "serve": "npm run build && node ./build/server/index.js"
   },
   "bin": {
-    "agenda-paper": "./build/server/bin/index.js"
+    "agenda-paper": "./build/server/index.js"
   },
   "eslintConfig": {
     "extends": [
