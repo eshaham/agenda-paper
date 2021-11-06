@@ -1,34 +1,22 @@
-import { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 import CenterScreen from '../components/CenterScreen';
-import LoginForm from '../components/LoginForm';
-
-interface SetupState {
-  otp: string;
-}
 
 const Setup = () => {
-  const [state, setState] = useState<SetupState>({
-    otp: '',
-  });
-
-  const { otp } = state;
-
-  const onOTPChanged = (newOTP: string) => {
-    setState({ ...state, otp: newOTP });
-  };
-
   const onLoginRequested = async () => {
-    if (otp) {
-      window.location.href = `/api/auth/login?otp=${otp}`;
-    }
+    window.location.href = `/api/auth/login`;
   };
 
   return (
-    <CenterScreen>
+    <CenterScreen fullHeight>
       <Box width={300}>
-        <LoginForm otp={otp} onOTPChanged={onOTPChanged} onLoginRequested={onLoginRequested} />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onLoginRequested}
+        >
+          Login with Google
+        </Button>
       </Box>
     </CenterScreen>
   );

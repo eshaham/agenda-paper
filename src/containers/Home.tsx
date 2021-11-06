@@ -10,38 +10,18 @@ import DayOfMonthIcon from '../components/DayOfMonthIcon';
 interface HomeState {
   isLoading: boolean;
   isLoggedIn: boolean;
-  otp: number;
   epaperSocket?: WebSocket;
   calendarEvents?: Array<CalendarEvent>;
 }
 
-function getRandomInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-async function verifyAuth(): Promise<{ isLoggedIn: boolean, password?: string }> {
-  const response = await fetch('/api/auth/verify-token');
+async function verifyLoggedIn(): Promise<boolean> {
+  const response = await fetch('/api/auth/login-status');
   if (response.ok) {
-    const data = response.json();
-    const { password } = await data;
-    return { isLoggedIn: true, password };
+    const data = await response.json();
+    const { isLoggedIn } = data;
+    return isLoggedIn;
   }
-  return { isLoggedIn: false };
-}
-
-async function associateUser(otp: number, password: string) {
-  const body = { otp, password };
-  const request = {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-  const response = await fetch('/api/auth/associate', request);
-  return response.ok;
+  return false;
 }
 
 async function getCalendarEvents(): Promise<Array<CalendarEvent> | undefined> {
@@ -57,52 +37,48 @@ const Home = () => {
   const [state, setState] = useState<HomeState>({
     isLoading: true,
     isLoggedIn: false,
-    otp: getRandomInt(100000, 1000000),
   });
 
   const {
     isLoading,
     isLoggedIn,
-    otp,
     calendarEvents,
     epaperSocket,
   } = state;
 
   useEffect(() => {
     const init = async () => {
-      const result = await verifyAuth();
-      const { isLoggedIn, password } = result;
+      const isLoggedIn = await verifyLoggedIn();
       setState((state) => ({ ...state, isLoggedIn, isLoading: false }));
 
       const epaperSocket = new WebSocket('ws://localhost:8081');
       epaperSocket.addEventListener('open', () => {
-        const msg = { type: 'render', password };
-        epaperSocket.send(JSON.stringify(msg));
+        epaperSocket.send('render');
       });
       setState((state) => ({ ...state, epaperSocket }));
 
       const serverSocket = new WebSocket('ws://localhost:3000/ws');
       serverSocket.onopen = (e) => {
-        serverSocket.send(JSON.stringify({ otp }));
+        serverSocket.send('listen');
       };
       serverSocket.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'loggedIn') {
-          const { password } = data;
-          const isAssociated = await associateUser(otp, password);
-          if (isAssociated) {
-            setState((state) => ({ ...state, isLoggedIn: true }));
-            const msg = { type: 'render', password };
-            epaperSocket.send(JSON.stringify(msg));
+        if (event.data === 'loggedIn') {
+          const isLoggedIn = await verifyLoggedIn();
+          setState((state) => ({ ...state, isLoggedIn }));
+
+          if (epaperSocket.readyState === WebSocket.OPEN) {
+            epaperSocket.send('render');
+          } else {
+            console.info('simulated ePaper rendering');
           }
         }
       };
     };
 
-    if (isLoading && otp) {
+    if (isLoading) {
       init();
     }
-  }, [otp, isLoading]);
+  }, [isLoading]);
 
   useEffect(() => {
     const initFetchEvents = async () => {
@@ -122,7 +98,7 @@ const Home = () => {
   }
 
   if (!isLoggedIn) {
-    return <NeedsSetup otp={otp} />;
+    return <NeedsSetup />;
   }
 
   if (!calendarEvents) {

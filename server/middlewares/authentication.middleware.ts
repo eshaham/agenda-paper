@@ -1,63 +1,52 @@
+import fs from 'fs';
+import os from 'os';
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { getEnvVariableOrDie } from '../helpers/env.helper';
 
 import { APRequest } from '../requests-types';
 import { initializePayload } from './general.middleware';
 
-function getTokenCookie(req: Request) {
-  if (!req.cookies || !req.cookies.__session) {
-    return null;
+const asyncFs = fs.promises;
+const CONFIG_FOLDER = `${os.homedir()}/.agenda-paper`;
+const TOKEN_PATH = `${CONFIG_FOLDER}/.token`;
+
+export const loadGoogleRefreshTokenIfExists = () => async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { payload } = <APRequest>req;
+
+  if (fs.existsSync(TOKEN_PATH)) {
+    const token = await asyncFs.readFile(TOKEN_PATH);
+    payload.googleRefreshToken = token.toString();
   }
 
-  return req.cookies.__session;
-}
+  next();
+};
 
-function assignToken() {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { payload } = <APRequest>req;
-    const token = getTokenCookie(req);
-    if (!token) {
-      console.info('rejecting token since it wasn\'t provided');
-      return res.status(401).send('Unauthorized: No token provided');
-    }
+export const storeRefreshToken = () => async (req: Request, res: Response, next: NextFunction) => {
+  const { payload } = <APRequest>req;
+  const { googleRefreshToken } = <{ googleRefreshToken: string }>payload;
 
-    payload.token = token;
+  if (!fs.existsSync(CONFIG_FOLDER)) {
+    fs.mkdirSync(CONFIG_FOLDER);
+  }
+  await asyncFs.writeFile(`${CONFIG_FOLDER}/.token`, googleRefreshToken);
 
-    return next();
-  };
-}
-
-function assignGoogleRefreshToken() {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const AUTH_SECRET = getEnvVariableOrDie('AUTH_SECRET');
-
-    const { payload } = <APRequest>req;
-    const { token } = <{ token: string }>payload;
-
-    let data;
-    try {
-      data = jwt.verify(token, AUTH_SECRET);
-    } catch (e) {
-      console.debug('rejecting token since it is invalid');
-      return res.status(401).send('Unauthorized: Invalid token');
-    }
-    const { googleRefreshToken } = <{ googleRefreshToken: string }>data;
-    payload.googleRefreshToken = googleRefreshToken;
-
-    return next();
-  };
-}
+  next();
+};
 
 export const authenticate = () => [
   initializePayload(),
-  assignToken(),
-  assignGoogleRefreshToken(),
+  loadGoogleRefreshTokenIfExists(),
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { payload } = <APRequest>req;
+    const { googleRefreshToken } = <{ googleRefreshToken: string }>payload;
+
+    if (!googleRefreshToken) {
+      return res.status(401).send('user not authenticated');
+    }
+
+    next();
+  },
 ];
-
-export const verifyToken = () => (req: Request, res: Response) => {
-  const { payload } = <APRequest>req;
-  const { password } = <{ password: string }>payload;
-
-  res.json({ password });
-};
