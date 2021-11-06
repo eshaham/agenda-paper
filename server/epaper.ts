@@ -19,7 +19,6 @@ export async function startEpaper() {
 
       ws.on('message', async (msg) => {
         if (msg === 'render') {
-          console.info('running epaper render');
           await page.display();
         }
       });
