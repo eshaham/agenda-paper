@@ -59,8 +59,9 @@
     "serve": "npm run build && node ./build/index.js"
   },
   "bin": {
-    "agenda-paper": "./build/index.js"
+    "agenda-paper": "./index.js"
   },
+  "files": ["build/**/*"],
   "eslintConfig": {
     "extends": [
       "react-app"
