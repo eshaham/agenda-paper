@@ -16,7 +16,6 @@ export function startServer() {
   app.use('/api', routes);
   app.ws('/ws', function(ws, req) {
     ws.on('message', (msg) => {
-      console.log(msg);
       if (msg.toString() === 'listen') {
         openSockets.push(ws);
       }
