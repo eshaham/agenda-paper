@@ -17,7 +17,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "outDir": "../build/server"
+    "noEmit": true
   }
 }

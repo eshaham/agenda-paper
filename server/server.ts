@@ -16,16 +16,15 @@ export function startServer() {
   app.use('/api', routes);
   app.ws('/ws', function(ws, req) {
     ws.on('message', (msg) => {
-      console.log(msg);
       if (msg.toString() === 'listen') {
         openSockets.push(ws);
       }
     });
   });
   if (NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../client')));
+    app.use(express.static(path.join(__dirname, './client')));
     app.use('*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../client/index.html'));
+      res.sendFile(path.join(__dirname, './client/index.html'));
     });
   }
 

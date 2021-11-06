@@ -1,13 +1,11 @@
 import fs from 'fs';
-import os from 'os';
 import { NextFunction, Request, Response } from 'express';
 
+import { CONFIG_FOLDER, TOKEN_FILE_PATH } from '../constants';
 import { APRequest } from '../requests-types';
 import { initializePayload } from './general.middleware';
 
 const asyncFs = fs.promises;
-const CONFIG_FOLDER = `${os.homedir()}/.agenda-paper`;
-const TOKEN_PATH = `${CONFIG_FOLDER}/.token`;
 
 export const loadGoogleRefreshTokenIfExists = () => async (
   req: Request,
@@ -16,8 +14,8 @@ export const loadGoogleRefreshTokenIfExists = () => async (
 ) => {
   const { payload } = <APRequest>req;
 
-  if (fs.existsSync(TOKEN_PATH)) {
-    const token = await asyncFs.readFile(TOKEN_PATH);
+  if (fs.existsSync(TOKEN_FILE_PATH)) {
+    const token = await asyncFs.readFile(TOKEN_FILE_PATH);
     payload.googleRefreshToken = token.toString();
   }
 
