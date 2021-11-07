@@ -17,6 +17,16 @@ wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ```
 
 Install node lts
+See here: https://dev.to/patrickweaver/installing-node-12-and-higher-on-a-raspberry-pi-zero-with-nvm-4dnj
+```
+NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release nvm install 14
+```
+
+check node version
+```
+node -v
+v14.18.1
+```
 
 ### Enable SPI
 
@@ -46,6 +56,10 @@ sudo apt-get install -y build-essential chromium-browser
 ```
 
 ### Install Agender Paper globally
+
+```
+NODE_OPTIONS=--max-old-space-size=512 npm i -g agenda-paper
+```
 
 ### Create Google app
 
