@@ -65,12 +65,6 @@ const Home = () => {
         if (event.data === 'loggedIn') {
           const isLoggedIn = await verifyLoggedIn();
           setState((state) => ({ ...state, isLoggedIn }));
-
-          if (epaperSocket.readyState === WebSocket.OPEN) {
-            epaperSocket.send('render');
-          } else {
-            console.info('simulated ePaper rendering');
-          }
         }
       };
     };
