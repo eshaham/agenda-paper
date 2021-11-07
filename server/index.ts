@@ -1,9 +1,9 @@
-import path from 'path';
 import dotEnv from 'dotenv';
 
+import { ENV_FILE_PATH } from './constants';
 import { startServer } from './server';
 
-dotEnv.config({ path: path.join(__dirname, '../.env') });
+dotEnv.config({ path: ENV_FILE_PATH });
 
 function verifyEnvVariableOrExit(variableName: string) {
   if (!process.env[variableName]) {
