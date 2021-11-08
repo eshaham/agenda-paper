@@ -59,7 +59,7 @@
     "serve": "npm run build && node ./build/index.js"
   },
   "bin": {
-    "agenda-paper": "./index.js"
+    "agenda-paper": "./build/index.js"
   },
   "files": [
     "build/**/*"
