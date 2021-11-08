@@ -3,6 +3,6 @@ require('esbuild').build({
   bundle: true,
   platform: 'node',
   outdir: '../build',
-  target: 'node16',
+  target: 'node14',
   external: ['sharp', 'paperjs'],
 }).catch(() => process.exit(1));
