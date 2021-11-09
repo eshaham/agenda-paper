@@ -58,7 +58,7 @@ sudo apt-get install -y build-essential chromium-browser
 ### Install Agender Paper globally
 
 ```
-NODE_OPTIONS=--max-old-space-size=512 npm i -g agenda-paper
+NODE_OPTIONS=--max-old-space-size=512 npm i -g agenda-paper --no-optional
 ```
 
 ### Create Google app
