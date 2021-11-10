@@ -22,7 +22,7 @@ module.exports = {
   ],
   mode: 'none',
   externals: [nodeExternals()],
-  target: 'node',
+  target: 'node14',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'build'),
