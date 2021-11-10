@@ -51,17 +51,17 @@
   "scripts": {
     "build": "npm run build:client && npm run build:server",
     "build:client": "BUILD_PATH='./build/client' react-scripts build",
-    "build:server": "cd server && tsc",
+    "build:server": "webpack",
     "eject": "react-scripts eject",
     "lint": "eslint ./",
     "prepublishOnly": "npm run build",
     "start": "concurrently --kill-others npm:start:server npm:start:client",
     "start:server": "cd server && PORT=8080 NODE_ENV=development ts-node-dev --respawn --transpile-only index.ts",
     "start:client": "react-scripts start",
-    "serve": "npm run build && node ./build/server/index.js"
+    "serve": "npm run build && node ./build/bundle.js"
   },
   "bin": {
-    "agenda-paper": "./build/server/bin/index.js"
+    "agenda-paper": "./build/bundle.js"
   },
   "eslintConfig": {
     "extends": [
