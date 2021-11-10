@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import dotEnv from 'dotenv';
 
 import { ENV_FILE_PATH } from './constants';
