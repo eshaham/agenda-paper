@@ -20,11 +20,14 @@ module.exports = {
   plugins: [
     new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
   ],
-  mode: 'none',
+  mode: 'production',
   externals: [nodeExternals()],
   target: 'node',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'build'),
+  },
+  node: {
+    __dirname: false,
   },
 };
