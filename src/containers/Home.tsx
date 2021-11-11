@@ -97,9 +97,9 @@ const Home = () => {
       const next15Time = dayjs().minute(roundedUp).second(0);
       await sleep(next15Time.diff(dayjs()));
 
-      await fetchEvents();
-
       setState((state) => ({ ...state, isAutoFetchOn: true }));
+
+      await fetchEvents();
     };
     if (isLoggedIn) {
       startFetchingEvents();
