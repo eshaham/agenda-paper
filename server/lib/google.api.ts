@@ -89,7 +89,15 @@ export const convertCodeToRefreshToken = async (code: string) => {
         data?: { error: string, error_description: string },
       },
     }>e;
-    console.error(`failed to convert code to token - status: ${status || ''}, error: ${data?.error || ''}, description: ${data?.error_description || ''}\n`, e);
+    const props = [
+      `status: ${status || ''}`,
+    ];
+    if (data) {
+      props.push(`error: ${data.error || ''}`);
+      props.push(`description: ${data.error_description || ''}`);
+    }
+    const msg = `failed to convert code to token - ${props.join(',')}`;
+    console.error(`${msg}\n`, e);
     throw e;
   }
 
