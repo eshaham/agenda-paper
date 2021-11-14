@@ -85,7 +85,7 @@ const Home = () => {
   }, [isLoading]);
 
   const fetchEvents = async () => {
-    console.log(`${dayjs().format('HH:mm')}: fetching events`);
+    console.info(`${dayjs().format('HH:mm')}: fetching events`);
     try {
       const calendarEvents = await callWithRetry(getCalendarEvents);
       setState((state) => ({ ...state, calendarEvents }));

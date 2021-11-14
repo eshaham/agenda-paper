@@ -9,6 +9,7 @@ import { callWithRetry } from '../helpers/error.helper';
 async function getCurrentEventsFromCalendar(googleRefreshToken: string) {
   const currentTime = dayjs();
   const endOfDay = dayjs(currentTime).endOf('day');
+  console.info(`${currentTime.format('HH:mm')}: fetching events`);
   const calendarEvents = await callWithRetry(
     () => getEventsBetweenDateTimes(
       googleRefreshToken,
