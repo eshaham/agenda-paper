@@ -14,10 +14,10 @@ function isoDateToTime(isoDate: string) {
 const CalendarEventDisplay = ({ calendarEvent, isShownFirst }: DisplayState) => {
   return (
     <Box mb={4}>
-      <Typography variant={ isShownFirst ? 'h2' : 'h3' } noWrap>
+      <Typography variant={ isShownFirst ? 'h2' : 'h3' } fontWeight={700} noWrap>
         {calendarEvent.title}
       </Typography>
-      <Typography variant={ isShownFirst ? 'h3' : 'h4' }>
+      <Typography variant={ isShownFirst ? 'h3' : 'h4' } fontWeight={500}>
         {isoDateToTime(calendarEvent.start)}-{isoDateToTime(calendarEvent.end)}
       </Typography>
     </Box>

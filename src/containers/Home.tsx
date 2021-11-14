@@ -6,12 +6,20 @@ import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
 import CalendarEventDisplay from '../components/CalendarEvent';
 import DayOfMonthIcon from '../components/DayOfMonthIcon';
+import dayjs from 'dayjs';
+import useInterval from '../hooks/use-interval';
+import { callWithRetry } from '../helpers/error.helper';
 
 interface HomeState {
   isLoading: boolean;
   isLoggedIn: boolean;
+  isAutoFetchOn: boolean;
   epaperSocket?: WebSocket;
   calendarEvents?: Array<CalendarEvent>;
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function verifyLoggedIn(): Promise<boolean> {
@@ -37,11 +45,13 @@ const Home = () => {
   const [state, setState] = useState<HomeState>({
     isLoading: true,
     isLoggedIn: false,
+    isAutoFetchOn: false,
   });
 
   const {
     isLoading,
     isLoggedIn,
+    isAutoFetchOn,
     calendarEvents,
     epaperSocket,
   } = state;
@@ -74,18 +84,43 @@ const Home = () => {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    const initFetchEvents = async () => {
-      const calendarEvents = await getCalendarEvents();
+  const fetchEvents = async () => {
+    console.info(`${dayjs().format('HH:mm')}: fetching events`);
+    try {
+      const calendarEvents = await callWithRetry(getCalendarEvents);
       setState((state) => ({ ...state, calendarEvents }));
-      if (epaperSocket && epaperSocket.readyState === WebSocket.OPEN) {
-        epaperSocket.send('render');
-      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    const startFetchingEvents = async () => {
+      await fetchEvents();
+
+      const roundedUp = Math.ceil(dayjs().minute() / 15) * 15;
+      const next15Time = dayjs().minute(roundedUp).second(0);
+      await sleep(next15Time.diff(dayjs()));
+
+      setState((state) => ({ ...state, isAutoFetchOn: true }));
+
+      await fetchEvents();
     };
     if (isLoggedIn) {
-      initFetchEvents();
+      startFetchingEvents();
     }
-  }, [isLoggedIn, epaperSocket]);
+  }, [isLoggedIn]);
+
+  useInterval(
+    fetchEvents,
+    isAutoFetchOn ? 15 * 60 * 1000 : null,
+  );
+
+  useEffect(() => {
+    if (calendarEvents && epaperSocket && epaperSocket.readyState === WebSocket.OPEN) {
+      epaperSocket.send('render');
+    }
+  }, [calendarEvents, epaperSocket]);
 
   if (isLoading) {
     return null;
@@ -115,7 +150,7 @@ const Home = () => {
   }
 
   return (
-    <>
+    <Box p={4}>
       <Box mb={4}>
         <CalendarEventDisplay calendarEvent={calendarEvents[0]} isShownFirst />
       </Box>
@@ -128,7 +163,7 @@ const Home = () => {
           {calendarEvents[2] && <CalendarEventDisplay calendarEvent={calendarEvents[2]} />}
         </Box>
       </Box>
-    </>
+    </Box>
   );
 };
 
