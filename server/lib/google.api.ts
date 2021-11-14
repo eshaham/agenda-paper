@@ -162,7 +162,7 @@ function didCurrentRecipientDeclined(
     return false;
   }
   const currentAttendee = attendees.find((attendee) => attendee.self);
-  if (currentAttendee?.responseStatus === 'declined') {
+  if (currentAttendee && currentAttendee.responseStatus === 'declined') {
     return true;
   }
   return false;
