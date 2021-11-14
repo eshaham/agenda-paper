@@ -8,6 +8,7 @@ import CalendarEventDisplay from '../components/CalendarEvent';
 import DayOfMonthIcon from '../components/DayOfMonthIcon';
 import dayjs from 'dayjs';
 import useInterval from '../hooks/use-interval';
+import { callWithRetry } from '../helpers/error.helper';
 
 interface HomeState {
   isLoading: boolean;
@@ -85,8 +86,12 @@ const Home = () => {
 
   const fetchEvents = async () => {
     console.log(`${dayjs().format('HH:mm')}: fetching events`);
-    const calendarEvents = await getCalendarEvents();
-    setState((state) => ({ ...state, calendarEvents }));
+    try {
+      const calendarEvents = await callWithRetry(getCalendarEvents);
+      setState((state) => ({ ...state, calendarEvents }));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
