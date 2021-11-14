@@ -155,6 +155,23 @@ function rawEventsToCalendarEvents(rawEvents: Array<calendar_v3.Schema$Event>): 
   });
 }
 
+function didCurrentRecipientDeclined(
+  attendees: Array<calendar_v3.Schema$EventAttendee> | undefined,
+) {
+  if (!attendees) {
+    return false;
+  }
+  const currentAttendee = attendees.find((attendee) => attendee.self);
+  if (currentAttendee?.responseStatus === 'declined') {
+    return true;
+  }
+  return false;
+}
+
+function getOnlyApprovedEvents(events: calendar_v3.Schema$Event[]) {
+  return events.filter((event) => !didCurrentRecipientDeclined(event.attendees));
+}
+
 export const getEventsBetweenDateTimes = async (
   googleRefreshToken: string,
   calendarId: string,
@@ -174,7 +191,8 @@ export const getEventsBetweenDateTimes = async (
     if (!result || !result.items) {
       return undefined;
     }
-    return rawEventsToCalendarEvents(result.items);
+    const approvedEvents = getOnlyApprovedEvents(result.items);
+    return rawEventsToCalendarEvents(approvedEvents);
   } catch (e) {
     logError(e, 'events query');
     throw e;
