@@ -4,13 +4,25 @@ This project allows you to set up an ePaper display on your desktop, which shows
 It uses hardware you can simply purchase on Amazon - an ePaper display and a Raspberry Pi Zero - and optionally a 3D printed case.
 Software wise, it uses [ePaper.js](https://github.com/samsonmking/epaper.js) as the framework for printing on the ePaper display, [Create React App](https://github.com/facebook/create-react-app) and express.js.
 
+![image](https://user-images.githubusercontent.com/7040645/142741601-7eb96d19-4da3-403b-8cfc-91371c4ecf04.png)
+
 # Getting started
+
+## Get the hardware
+
+* Waveshare 7.5" ePaper display - [Amazon](https://amzn.to/30Kmm1n)
+* Raspberry Pi Zero WH - [Amazon](https://amzn.to/2Z59Xom)
+* Raspberry Pi Power Supply - [Amazon](https://amzn.to/30GeVJi)
+* 16GB MicroSD card - [Amazon](https://amzn.to/3kXAR9o)
+* 7.5" enclosure (optional) - [Amazon](https://amzn.to/3HFlvjJ) - in case you can't 3D print a proper enclosure
+
+If you have access to a 3D printer, I used this [awesome design](https://www.thingiverse.com/thing:4152661) as an enclosure.
 
 ## Create a GCP app
 
 In order to be able to login to your Google calendar, you will need to set up an app on [Google Cloud Console](https://console.cloud.google.com/).
-You can (and should) do this on your regular computer, no need to do it on the Raspberry Pi.
-Steps
+
+Steps:
 
 1. Set up a [new project](https://console.cloud.google.com/projectcreate) under Google Cloud Console.
 2. Enable the [Google Calendar API](https://console.cloud.google.com/apis/api/calendar-json.googleapis.com/overview) for your newly created project.
@@ -110,7 +122,5 @@ agenda-paper
 
 You should be seeing a prompt on your ePaper display to set up your account. Follow the instructions to set everything up.
 Eventually, you should be seeing your agenda on the display.
-
-![image](https://user-images.githubusercontent.com/7040645/142741601-7eb96d19-4da3-403b-8cfc-91371c4ecf04.png)
 
 ```
