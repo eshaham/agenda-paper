@@ -27,16 +27,16 @@ Steps:
 1. Set up a [new project](https://console.cloud.google.com/projectcreate) under Google Cloud Console.
 2. Enable the [Google Calendar API](https://console.cloud.google.com/apis/api/calendar-json.googleapis.com/overview) for your newly created project.
 3. Create new credentials for your project:
-   a. Goto the [credentials page](https://console.cloud.google.com/apis/credentials) and click on the "Create credentials" button
-   b. Choose the OAuth Client ID option
-   c. Choose Web application for application type
-   d. Add `http://localhost:3000` under "Authorized JavaScript origins" and `http://localhost:3000/api/auth/login/callback` under "Authorized redirect URIs", click save
-   e. Copy the created Client ID and Client Secret, you will need them later
+   1. Goto the [credentials page](https://console.cloud.google.com/apis/credentials) and click on the "Create credentials" button
+   2. Choose the OAuth Client ID option
+   3. Choose Web application for application type
+   4. Add `http://localhost:3000` under "Authorized JavaScript origins" and `http://localhost:3000/api/auth/login/callback` under "Authorized redirect URIs", click save
+   5. Copy the created Client ID and Client Secret, you will need them later
 4. Update the OAuth Consent screen:
-   a. Go to the [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) setup page
-   b. Give your app a name and provide your email (not that important since you will be the only one using this app), click Save and Continue
-   c. Click the "Add or remove scopes" button and select the `calendar.events.readonly` scope, click Save and Continue
-   d. Save your app
+   1. Go to the [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent) setup page
+   2. Give your app a name and provide your email (not that important since you will be the only one using this app), click Save and Continue
+   3. Click the "Add or remove scopes" button and select the `calendar.events.readonly` scope, click Save and Continue
+   4. Save your app
 
 ## Install Raspberry Pi Operating System (with desktop)
 
@@ -122,5 +122,3 @@ agenda-paper
 
 You should be seeing a prompt on your ePaper display to set up your account. Follow the instructions to set everything up.
 Eventually, you should be seeing your agenda on the display.
-
-```
