@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
-import { CalendarEvent } from '../types';
+import { CalendarEvent, SettingsData } from '../types';
 import NeedsSetup from '../components/NeedsSetup';
 import CenterScreen from '../components/CenterScreen';
 import CalendarEventDisplay from '../components/CalendarEvent';
@@ -15,6 +15,7 @@ interface HomeState {
   isLoggedIn: boolean;
   isAutoFetchOn: boolean;
   epaperSocket?: WebSocket;
+  settings?: SettingsData;
   calendarEvents?: Array<CalendarEvent>;
 }
 
@@ -30,6 +31,15 @@ async function verifyLoggedIn(): Promise<boolean> {
     return isLoggedIn;
   }
   return false;
+}
+
+async function loadSettings(): Promise<SettingsData | undefined> {
+  const response = await fetch('/api/settings');
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  }
+  return;
 }
 
 async function getCalendarEvents(): Promise<Array<CalendarEvent> | undefined> {
@@ -52,6 +62,7 @@ const Home = () => {
     isLoading,
     isLoggedIn,
     isAutoFetchOn,
+    settings,
     calendarEvents,
     epaperSocket,
   } = state;
@@ -76,6 +87,10 @@ const Home = () => {
           const isLoggedIn = await verifyLoggedIn();
           setState((state) => ({ ...state, isLoggedIn }));
         }
+        if (event.data === 'settingsChanged') {
+          const settings = await loadSettings();
+          setState((state) => ({ ...state, settings }));
+        }
       };
     };
 
@@ -87,8 +102,9 @@ const Home = () => {
   const fetchEvents = async () => {
     console.info(`${dayjs().format('HH:mm')}: fetching events`);
     try {
+      const settings = await callWithRetry(loadSettings);
       const calendarEvents = await callWithRetry(getCalendarEvents);
-      setState((state) => ({ ...state, calendarEvents }));
+      setState((state) => ({ ...state, settings, calendarEvents }));
     } catch (e) {
       console.error(e);
     }
@@ -152,15 +168,28 @@ const Home = () => {
   return (
     <Box p={4}>
       <Box mb={4}>
-        <CalendarEventDisplay calendarEvent={calendarEvents[0]} isShownFirst />
+        <CalendarEventDisplay
+          calendarEvent={calendarEvents[0]}
+          showLocation={settings?.showLocation}
+          isShownFirst
+        />
       </Box>
       <Box display="flex">
         <Box width={110} flexShrink={0} mr={6}>
           <DayOfMonthIcon />
         </Box>
         <Box flex={6} overflow="hidden">
-          {calendarEvents[1] && <CalendarEventDisplay calendarEvent={calendarEvents[1]} />}
-          {calendarEvents[2] && <CalendarEventDisplay calendarEvent={calendarEvents[2]} />}
+          {calendarEvents[1] && (
+            <CalendarEventDisplay
+              calendarEvent={calendarEvents[1]}
+              showLocation={settings?.showLocation}
+            />
+          )}
+          {calendarEvents[2] && !settings?.showLocation && (
+            <CalendarEventDisplay
+              calendarEvent={calendarEvents[2]}
+            />
+          )}
         </Box>
       </Box>
     </Box>

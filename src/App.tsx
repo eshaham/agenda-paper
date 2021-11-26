@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 
 import Home from './containers/Home';
 import Setup from './containers/Setup';
+import Settings from './containers/Settings';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Router>
         <Route path="/" exact component={Home} />
         <Route path="/setup" component={Setup} />
+        <Route path="/settings" component={Settings} />
       </Router>
     </Box>
   );

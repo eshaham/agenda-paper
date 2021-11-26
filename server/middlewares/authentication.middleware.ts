@@ -26,9 +26,6 @@ export const storeRefreshToken = () => async (req: Request, res: Response, next:
   const { payload } = <APRequest>req;
   const { googleRefreshToken } = <{ googleRefreshToken: string }>payload;
 
-  if (!fs.existsSync(CONFIG_FOLDER)) {
-    fs.mkdirSync(CONFIG_FOLDER);
-  }
   await asyncFs.writeFile(`${CONFIG_FOLDER}/.token`, googleRefreshToken);
 
   next();

@@ -18,6 +18,7 @@ export interface CalendarEvent {
   title: string;
   start: string;
   end: string;
+  location?: string;
   isPrivate: boolean;
 }
 
@@ -150,6 +151,7 @@ function rawEventsToCalendarEvents(rawEvents: Array<calendar_v3.Schema$Event>): 
       title: <string>rawEvent.summary,
       start: startDateTime,
       end: endDateTime,
+      location: <string | undefined>rawEvent.location,
       isPrivate: rawEvent.visibility === 'private',
     };
   });
