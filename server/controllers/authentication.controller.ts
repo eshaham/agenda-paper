@@ -5,6 +5,7 @@ import { convertCodeToRefreshToken, createAuthUrl } from '../lib/google.api';
 import { openSockets } from '../open-sockets';
 import { initializePayload } from '../middlewares/general.middleware';
 import { loadGoogleRefreshTokenIfExists, storeRefreshToken } from '../middlewares/authentication.middleware';
+import { verifyConfigFolderExists } from '../middlewares/config.middleware';
 
 const SITE_URL = 'http://localhost:3000';
 
@@ -72,6 +73,7 @@ export const authorizeUser = () => [
   initializePayload(),
   verifyCode(),
   initGoogleClient(),
+  verifyConfigFolderExists(),
   storeRefreshToken(),
   notifySocketsAboutLogin(),
   redirectAfterAuth(),

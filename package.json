@@ -96,9 +96,7 @@
           }
         }
       ],
-      "@typescript-eslint/semi": [
-        "error"
-      ],
+      "@typescript-eslint/semi": "error",
       "comma-dangle": [
         "error",
         "always-multiline"
@@ -111,13 +109,13 @@
         "error",
         2
       ],
-      "no-multi-spaces": [
-        "error"
-      ],
+      "no-multi-spaces": "error",
+      "no-var": "error",
       "object-curly-spacing": [
         "error",
         "always"
       ],
+      "prefer-const": "error",
       "quotes": [
         2,
         "single",
