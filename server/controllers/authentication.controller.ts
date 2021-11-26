@@ -66,7 +66,7 @@ const notifySocketsAboutLogin = () => (req: Request, res: Response, next: NextFu
 };
 
 const redirectAfterAuth = () => (req: Request, res: Response) => {
-  return res.redirect(SITE_URL);
+  return res.redirect(`${SITE_URL}/settings`);
 };
 
 export const authorizeUser = () => [
