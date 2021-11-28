@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-ws": "^5.0.2",
     "googleapis": "^91.0.0",
+    "pre-commit": "^1.2.2",
     "ws": "^7.5.5"
   },
   "optionalDependencies": {
@@ -126,6 +127,9 @@
       ]
     }
   },
+  "pre-commit": [
+    "lint"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
