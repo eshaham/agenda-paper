@@ -21,7 +21,12 @@ module.exports = {
     new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
   ],
   mode: 'production',
-  externals: [nodeExternals()],
+  externals: [
+    nodeExternals(),
+    {
+      epaperjs: 'epaperjs',
+    },
+  ],
   target: 'node',
   output: {
     filename: 'bundle.js',
