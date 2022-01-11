@@ -14,6 +14,7 @@ jobs:
       - name: 'Checkout source code'
         uses: 'actions/checkout@v2'
         with:
+          token: ${{ secrets.ADMIN_TOKEN }}
           ref: ${{ github.ref }}
       - name: 'Automated Version Bump'
         id: version-bump
@@ -21,7 +22,7 @@ jobs:
         with:
           tag-prefix: 'v'
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
       - name: 'Output Step'
         env:
           NEW_TAG: ${{ steps.version-bump.outputs.newTag }}
