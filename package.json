@@ -21,7 +21,7 @@
     "ws": "^7.5.5"
   },
   "optionalDependencies": {
-    "epaperjs": "1.6.0"
+    "epaperjs": "1.7.1"
   },
   "devDependencies": {
     "@emotion/react": "^11.5.0",
