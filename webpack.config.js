@@ -24,7 +24,7 @@ module.exports = {
   externals: [
     nodeExternals(),
     {
-      epaperjs: 'epaperjs',
+      epaperjs: 'require(\'epaperjs\')',
     },
   ],
   target: 'node',
