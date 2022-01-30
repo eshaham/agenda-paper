@@ -122,3 +122,37 @@ agenda-paper
 
 You should be seeing a prompt on your ePaper display to set up your account. Follow the instructions to set everything up.
 Eventually, you should be seeing your agenda on the display.
+
+## Running Agenda-Paper on system startup
+
+First, let's install `pm2` globally.
+```
+npm i -g pm2
+```
+
+Now, let's run setup pm2 on system startup:
+```
+pm2 startup
+```
+
+Run the command shown in the output - should be something along these lines:
+```
+sudo env PATH=$PATH:/home/pi/.nvm/versions/node/<version>/bin /home/pi/.nvm/versions/node/<version>/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
+```
+
+Now, let's run `agenda-paper` using `pm2`
+```
+pm2 start agenda-paper
+```
+
+Finally, let's persist `agenda-paper` on `pm2` app list
+```
+pm2 save
+```
+
+If everything goes well, agenda-paper should be started automatically on system startup
+
+To check the app logs under `pm2`, use the following command:
+```
+pm2 logs
+```
