@@ -109,7 +109,6 @@ const Home = () => {
       if (isLoggedIn) {
         if (autoFetchInterval === INITIAL_FETCH_INTERVAL) {
           const roundedUp = (dayjs().minute() + FETCH_INTERVAL_MINS - (dayjs().minute() % FETCH_INTERVAL_MINS)) % 60;
-          console.log(roundedUp);
           const nextTime = dayjs().minute(roundedUp).second(0);
           setState((state) => ({ ...state, autoFetchInterval: nextTime.diff(dayjs()) }));
         } else if (autoFetchInterval !== FETCH_INTERVAL) {
