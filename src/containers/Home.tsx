@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
 import { CalendarEvent, SettingsData } from '../types';
@@ -13,14 +13,10 @@ import { callWithRetry } from '../helpers/error.helper';
 interface HomeState {
   isLoading: boolean;
   isLoggedIn: boolean;
-  isAutoFetchOn: boolean;
+  autoFetchInterval: number;
   epaperSocket?: WebSocket;
   settings?: SettingsData;
   calendarEvents?: Array<CalendarEvent>;
-}
-
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function verifyLoggedIn(): Promise<boolean> {
@@ -55,17 +51,21 @@ function areCalendarListsEqual(list1: Array<CalendarEvent>, list2: Array<Calenda
   return JSON.stringify(list1) === JSON.stringify(list2);
 }
 
+const INITIAL_FETCH_INTERVAL = 1000;
+const FETCH_INTERVAL_MINS = 15;
+const FETCH_INTERVAL = FETCH_INTERVAL_MINS * 60 * 1000;
+
 const Home = () => {
   const [state, setState] = useState<HomeState>({
     isLoading: true,
     isLoggedIn: false,
-    isAutoFetchOn: false,
+    autoFetchInterval: INITIAL_FETCH_INTERVAL,
   });
 
   const {
     isLoading,
     isLoggedIn,
-    isAutoFetchOn,
+    autoFetchInterval,
     settings,
     calendarEvents,
     epaperSocket,
@@ -104,37 +104,29 @@ const Home = () => {
     }
   }, [isLoading]);
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      const newCalendarEvents = await callWithRetry(getCalendarEvents);
-      if (!calendarEvents || (newCalendarEvents && !areCalendarListsEqual(calendarEvents.slice(0, 3), newCalendarEvents.slice(0, 3)))) {
-        setState((state) => ({ ...state, calendarEvents: newCalendarEvents }));
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [calendarEvents]);
-
-  useEffect(() => {
-    const startFetchingEvents = async () => {
-      await fetchEvents();
-
-      const roundedUp = Math.ceil(dayjs().minute() / 15) * 15;
-      const next15Time = dayjs().minute(roundedUp).second(0);
-      await sleep(next15Time.diff(dayjs()));
-
-      setState((state) => ({ ...state, isAutoFetchOn: true }));
-
-      await fetchEvents();
-    };
-    if (isLoggedIn) {
-      startFetchingEvents();
-    }
-  }, [isLoggedIn, fetchEvents]);
-
   useInterval(
-    fetchEvents,
-    isAutoFetchOn ? 15 * 60 * 1000 : null,
+    async () => {
+      if (isLoggedIn) {
+        if (autoFetchInterval === INITIAL_FETCH_INTERVAL) {
+          const roundedUp = (dayjs().minute() + FETCH_INTERVAL_MINS - (dayjs().minute() % FETCH_INTERVAL_MINS)) % 60;
+          console.log(roundedUp);
+          const nextTime = dayjs().minute(roundedUp).second(0);
+          setState((state) => ({ ...state, autoFetchInterval: nextTime.diff(dayjs()) }));
+        } else if (autoFetchInterval !== FETCH_INTERVAL) {
+          setState((state) => ({ ...state, autoFetchInterval: FETCH_INTERVAL }));
+        }
+
+        try {
+          const newCalendarEvents = await callWithRetry(getCalendarEvents);
+          if (!calendarEvents || (newCalendarEvents && !areCalendarListsEqual(calendarEvents.slice(0, 3), newCalendarEvents.slice(0, 3)))) {
+            setState((state) => ({ ...state, calendarEvents: newCalendarEvents }));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
+    autoFetchInterval,
   );
 
   useEffect(() => {
