@@ -19,6 +19,10 @@ interface HomeState {
   calendarEvents?: Array<CalendarEvent>;
 }
 
+const INITIAL_FETCH_INTERVAL = 1000;
+const FETCH_INTERVAL_MINS = 15;
+const FETCH_INTERVAL = FETCH_INTERVAL_MINS * 60 * 1000;
+
 async function verifyLoggedIn(): Promise<boolean> {
   const response = await fetch('/api/auth/login-status');
   if (response.ok) {
@@ -51,9 +55,15 @@ function areCalendarListsEqual(list1: Array<CalendarEvent>, list2: Array<Calenda
   return JSON.stringify(list1) === JSON.stringify(list2);
 }
 
-const INITIAL_FETCH_INTERVAL = 1000;
-const FETCH_INTERVAL_MINS = 15;
-const FETCH_INTERVAL = FETCH_INTERVAL_MINS * 60 * 1000;
+function calcNextTickTime() {
+  const currentMinute = dayjs().minute();
+  const nextTickMinute = (currentMinute + FETCH_INTERVAL_MINS - (currentMinute % FETCH_INTERVAL_MINS)) % 60;
+  const nextTickTime = dayjs().minute(nextTickMinute).second(0);
+  if (nextTickMinute < currentMinute) {
+    nextTickTime.add(1, 'hour');
+  }
+  return nextTickTime;
+}
 
 const Home = () => {
   const [state, setState] = useState<HomeState>({
@@ -108,9 +118,8 @@ const Home = () => {
     async () => {
       if (isLoggedIn) {
         if (autoFetchInterval === INITIAL_FETCH_INTERVAL) {
-          const roundedUp = (dayjs().minute() + FETCH_INTERVAL_MINS - (dayjs().minute() % FETCH_INTERVAL_MINS)) % 60;
-          const nextTime = dayjs().minute(roundedUp).second(0);
-          setState((state) => ({ ...state, autoFetchInterval: nextTime.diff(dayjs()) }));
+          const nextTickTime = calcNextTickTime();
+          setState((state) => ({ ...state, autoFetchInterval: nextTickTime.diff(dayjs()) }));
         } else if (autoFetchInterval !== FETCH_INTERVAL) {
           setState((state) => ({ ...state, autoFetchInterval: FETCH_INTERVAL }));
         }
