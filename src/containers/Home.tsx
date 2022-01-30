@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
 import { CalendarEvent, SettingsData } from '../types';
@@ -104,7 +104,7 @@ const Home = () => {
     }
   }, [isLoading]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       const newCalendarEvents = await callWithRetry(getCalendarEvents);
       if (!calendarEvents || (newCalendarEvents && !areCalendarListsEqual(calendarEvents.slice(0, 3), newCalendarEvents.slice(0, 3)))) {
@@ -113,7 +113,7 @@ const Home = () => {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [calendarEvents]);
 
   useEffect(() => {
     const startFetchingEvents = async () => {
@@ -130,7 +130,7 @@ const Home = () => {
     if (isLoggedIn) {
       startFetchingEvents();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchEvents]);
 
   useInterval(
     fetchEvents,
