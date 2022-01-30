@@ -51,6 +51,10 @@ async function getCalendarEvents(): Promise<Array<CalendarEvent> | undefined> {
   return undefined;
 }
 
+function areCalendarListsEqual(list1: Array<CalendarEvent>, list2: Array<CalendarEvent>): boolean {
+  return JSON.stringify(list1) === JSON.stringify(list2);
+}
+
 const Home = () => {
   const [state, setState] = useState<HomeState>({
     isLoading: true,
@@ -69,8 +73,9 @@ const Home = () => {
 
   useEffect(() => {
     const init = async () => {
+      const settings = await callWithRetry(loadSettings);
       const isLoggedIn = await verifyLoggedIn();
-      setState((state) => ({ ...state, isLoggedIn, isLoading: false }));
+      setState((state) => ({ ...state, settings, isLoggedIn, isLoading: false }));
 
       const epaperSocket = new WebSocket('ws://localhost:8081');
       epaperSocket.addEventListener('open', () => {
@@ -100,11 +105,11 @@ const Home = () => {
   }, [isLoading]);
 
   const fetchEvents = async () => {
-    console.info(`${dayjs().format('HH:mm')}: fetching events`);
     try {
-      const settings = await callWithRetry(loadSettings);
-      const calendarEvents = await callWithRetry(getCalendarEvents);
-      setState((state) => ({ ...state, settings, calendarEvents }));
+      const newCalendarEvents = await callWithRetry(getCalendarEvents);
+      if (!calendarEvents || (newCalendarEvents && !areCalendarListsEqual(calendarEvents.slice(0, 3), newCalendarEvents.slice(0, 3)))) {
+        setState((state) => ({ ...state, calendarEvents: newCalendarEvents }));
+      }
     } catch (e) {
       console.error(e);
     }
