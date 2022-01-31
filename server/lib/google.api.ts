@@ -20,6 +20,7 @@ export interface CalendarEvent {
   end: string;
   location?: string;
   isPrivate: boolean;
+  isFree: boolean;
 }
 
 const SITE_URL = 'http://localhost:3000';
@@ -153,6 +154,7 @@ function rawEventsToCalendarEvents(rawEvents: Array<calendar_v3.Schema$Event>): 
       end: endDateTime,
       location: <string | undefined>rawEvent.location,
       isPrivate: rawEvent.visibility === 'private',
+      isFree: rawEvent.transparency === 'transparent',
     };
   });
 }
