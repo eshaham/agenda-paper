@@ -46,6 +46,8 @@ const Settings = () => {
     isLoading: true,
     isProcessing: false,
     showLocation: false,
+    showFreeEvents: false,
+    maskPrivateEvents: false,
   });
 
   useEffect(() => {
@@ -69,8 +71,8 @@ const Settings = () => {
 
   useEffect(() => {
     const doSendSettingsChanges = async () => {
-      const { showLocation } = state;
-      const result = await sendSettingsChanges({ showLocation });
+      const { showLocation, showFreeEvents, maskPrivateEvents } = state;
+      const result = await sendSettingsChanges({ showLocation, showFreeEvents, maskPrivateEvents });
       if (result.success) {
         setState((state) => ({
           ...state,
@@ -98,7 +100,14 @@ const Settings = () => {
     });
   };
 
-  const { isLoading, isProcessing, showLocation, error } = state;
+  const {
+    isLoading,
+    isProcessing,
+    showLocation,
+    showFreeEvents,
+    maskPrivateEvents,
+    error,
+  } = state;
 
   if (isLoading) {
     return (
@@ -113,17 +122,39 @@ const Settings = () => {
   return (
     <CenterScreen>
       <Typography variant="h1">Settings</Typography>
-      <FormGroup>
-        <FormControlLabel control={
-          <Switch
-            name="showLocation"
-            checked={showLocation}
-            disabled={isProcessing}
-            onChange={onSettingsChanged}
-          />
-        } label="Show Event Location" />
-      </FormGroup>
-      {error && <Alert severity="error">{error}</Alert>}
+      <Box display="flex" flexDirection="column">
+        <FormGroup>
+          <FormControlLabel control={
+            <Switch
+              name="showLocation"
+              checked={showLocation}
+              disabled={isProcessing}
+              onChange={onSettingsChanged}
+            />
+          } label="Show Event Location" />
+        </FormGroup>
+        <FormGroup>
+          <FormControlLabel control={
+            <Switch
+              name="showFreeEvents"
+              checked={showFreeEvents}
+              disabled={isProcessing}
+              onChange={onSettingsChanged}
+            />
+          } label="Show Free Events" />
+        </FormGroup>
+        <FormGroup>
+          <FormControlLabel control={
+            <Switch
+              name="maskPrivateEvents"
+              checked={maskPrivateEvents}
+              disabled={isProcessing}
+              onChange={onSettingsChanged}
+            />
+          } label="Mask Private Events" />
+        </FormGroup>
+        {error && <Alert severity="error">{error}</Alert>}
+      </Box>
     </CenterScreen>
   );
 };

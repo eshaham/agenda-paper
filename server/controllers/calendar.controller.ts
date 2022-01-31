@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { NextFunction, Request, Response } from 'express';
 
 import { APRequest } from '../requests-types';
-import { initializePayload } from '../middlewares/general.middleware';
 import { getEventsBetweenDateTimes } from '../lib/google.api';
 import { callWithRetry } from '../helpers/error.helper';
+import { initializePayload } from '../middlewares/general.middleware';
+import { loadSettingsFromFile, Settings } from '../middlewares/settings.middleware';
 
 async function getCurrentEventsFromCalendar(googleRefreshToken: string) {
   const currentTime = dayjs();
@@ -23,15 +24,23 @@ async function getCurrentEventsFromCalendar(googleRefreshToken: string) {
 
 const fetchCalendarEvents = () => async (req: Request, res: Response, next: NextFunction) => {
   const { payload } = <APRequest>req;
-  const { googleRefreshToken } = <{ googleRefreshToken: string }>payload;
-  const calendarEvents = await getCurrentEventsFromCalendar(googleRefreshToken);
+  const { googleRefreshToken, settings } = <{ googleRefreshToken: string, settings: Settings }>payload;
+  const { showFreeEvents, maskPrivateEvents } = settings;
+
+  let calendarEvents = await getCurrentEventsFromCalendar(googleRefreshToken);
 
   if (calendarEvents) {
-    calendarEvents.forEach((event) => {
-      if (event.isPrivate) {
-        event.title = 'Private';
-      }
-    });
+    if (maskPrivateEvents) {
+      calendarEvents.forEach((event) => {
+        if (event.isPrivate) {
+          event.title = 'Private';
+        }
+      });
+    }
+
+    if (!showFreeEvents) {
+      calendarEvents = calendarEvents.filter((event) => !event.isFree);
+    }
 
     payload.calendarEvents = calendarEvents;
   }
@@ -41,6 +50,7 @@ const fetchCalendarEvents = () => async (req: Request, res: Response, next: Next
 
 export const getCurrentCalendarEvents = () => [
   initializePayload(),
+  loadSettingsFromFile(),
   fetchCalendarEvents(),
   async (req: Request, res: Response) => {
     const { payload } = <APRequest>req;

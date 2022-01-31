@@ -1,5 +1,7 @@
 export interface SettingsData {
-  showLocation: boolean;
+  showLocation?: boolean;
+  showFreeEvents?: boolean;
+  maskPrivateEvents?: boolean;
 }
 
 export interface CalendarEvent {
