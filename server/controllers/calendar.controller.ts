@@ -25,16 +25,18 @@ async function getCurrentEventsFromCalendar(googleRefreshToken: string) {
 const fetchCalendarEvents = () => async (req: Request, res: Response, next: NextFunction) => {
   const { payload } = <APRequest>req;
   const { googleRefreshToken, settings } = <{ googleRefreshToken: string, settings: Settings }>payload;
-  const { showFreeEvents } = settings;
+  const { showFreeEvents, maskPrivateEvents } = settings;
 
   let calendarEvents = await getCurrentEventsFromCalendar(googleRefreshToken);
 
   if (calendarEvents) {
-    calendarEvents.forEach((event) => {
-      if (event.isPrivate) {
-        event.title = 'Private';
-      }
-    });
+    if (maskPrivateEvents) {
+      calendarEvents.forEach((event) => {
+        if (event.isPrivate) {
+          event.title = 'Private';
+        }
+      });
+    }
 
     if (!showFreeEvents) {
       calendarEvents = calendarEvents.filter((event) => !event.isFree);

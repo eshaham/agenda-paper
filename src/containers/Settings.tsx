@@ -47,6 +47,7 @@ const Settings = () => {
     isProcessing: false,
     showLocation: false,
     showFreeEvents: false,
+    maskPrivateEvents: false,
   });
 
   useEffect(() => {
@@ -70,8 +71,8 @@ const Settings = () => {
 
   useEffect(() => {
     const doSendSettingsChanges = async () => {
-      const { showLocation, showFreeEvents } = state;
-      const result = await sendSettingsChanges({ showLocation, showFreeEvents });
+      const { showLocation, showFreeEvents, maskPrivateEvents } = state;
+      const result = await sendSettingsChanges({ showLocation, showFreeEvents, maskPrivateEvents });
       if (result.success) {
         setState((state) => ({
           ...state,
@@ -104,6 +105,7 @@ const Settings = () => {
     isProcessing,
     showLocation,
     showFreeEvents,
+    maskPrivateEvents,
     error,
   } = state;
 
@@ -140,6 +142,16 @@ const Settings = () => {
               onChange={onSettingsChanged}
             />
           } label="Show Free Events" />
+        </FormGroup>
+        <FormGroup>
+          <FormControlLabel control={
+            <Switch
+              name="maskPrivateEvents"
+              checked={maskPrivateEvents}
+              disabled={isProcessing}
+              onChange={onSettingsChanged}
+            />
+          } label="Mask Private Events" />
         </FormGroup>
         {error && <Alert severity="error">{error}</Alert>}
       </Box>

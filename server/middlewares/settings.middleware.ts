@@ -7,12 +7,14 @@ import { doesFileExist, readJsonFile, writeJsonToFile } from '../helpers/file.he
 export interface Settings {
   showLocation?: boolean;
   showFreeEvents?: boolean;
+  maskPrivateEvents?: boolean;
 }
 
 const SETTINGS_FILE_NAME = `${CONFIG_FOLDER}/settings.json`;
 const INITIAL_SETTINGS: Settings = {
   showLocation: false,
   showFreeEvents: false,
+  maskPrivateEvents: true,
 };
 
 export const loadSettingsFromFile = () => async (req: Request, res: Response, next: NextFunction) => {
@@ -33,11 +35,12 @@ export const loadSettingsFromFile = () => async (req: Request, res: Response, ne
 
 export const extractSettingsFromBody = () => async (req: Request, res: Response, next: NextFunction) => {
   const { body, payload } = <APRequest>req;
-  const { showLocation, showFreeEvents } = <Settings>body;
+  const { showLocation, showFreeEvents, maskPrivateEvents } = <Settings>body;
 
   const settings: Settings = {
     showLocation,
     showFreeEvents,
+    maskPrivateEvents,
   };
 
   payload.settings = settings;
