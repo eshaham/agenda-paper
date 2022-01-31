@@ -13,15 +13,15 @@ import { callWithRetry } from '../helpers/error.helper';
 interface HomeState {
   isLoading: boolean;
   isLoggedIn: boolean;
-  isAutoFetchOn: boolean;
+  autoFetchInterval: number;
   epaperSocket?: WebSocket;
   settings?: SettingsData;
   calendarEvents?: Array<CalendarEvent>;
 }
 
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+const INITIAL_FETCH_INTERVAL = 1000;
+const FETCH_INTERVAL_MINS = 15;
+const FETCH_INTERVAL = FETCH_INTERVAL_MINS * 60 * 1000;
 
 async function verifyLoggedIn(): Promise<boolean> {
   const response = await fetch('/api/auth/login-status');
@@ -51,17 +51,31 @@ async function getCalendarEvents(): Promise<Array<CalendarEvent> | undefined> {
   return undefined;
 }
 
+function areCalendarListsEqual(list1: Array<CalendarEvent>, list2: Array<CalendarEvent>): boolean {
+  return JSON.stringify(list1) === JSON.stringify(list2);
+}
+
+function calcNextTickTime() {
+  const currentMinute = dayjs().minute();
+  const nextTickMinute = (currentMinute + FETCH_INTERVAL_MINS - (currentMinute % FETCH_INTERVAL_MINS)) % 60;
+  const nextTickTime = dayjs().minute(nextTickMinute).second(0);
+  if (nextTickMinute < currentMinute) {
+    nextTickTime.add(1, 'hour');
+  }
+  return nextTickTime;
+}
+
 const Home = () => {
   const [state, setState] = useState<HomeState>({
     isLoading: true,
     isLoggedIn: false,
-    isAutoFetchOn: false,
+    autoFetchInterval: INITIAL_FETCH_INTERVAL,
   });
 
   const {
     isLoading,
     isLoggedIn,
-    isAutoFetchOn,
+    autoFetchInterval,
     settings,
     calendarEvents,
     epaperSocket,
@@ -69,8 +83,9 @@ const Home = () => {
 
   useEffect(() => {
     const init = async () => {
+      const settings = await callWithRetry(loadSettings);
       const isLoggedIn = await verifyLoggedIn();
-      setState((state) => ({ ...state, isLoggedIn, isLoading: false }));
+      setState((state) => ({ ...state, settings, isLoggedIn, isLoading: false }));
 
       const epaperSocket = new WebSocket('ws://localhost:8081');
       epaperSocket.addEventListener('open', () => {
@@ -99,37 +114,27 @@ const Home = () => {
     }
   }, [isLoading]);
 
-  const fetchEvents = async () => {
-    console.info(`${dayjs().format('HH:mm')}: fetching events`);
-    try {
-      const settings = await callWithRetry(loadSettings);
-      const calendarEvents = await callWithRetry(getCalendarEvents);
-      setState((state) => ({ ...state, settings, calendarEvents }));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useEffect(() => {
-    const startFetchingEvents = async () => {
-      await fetchEvents();
-
-      const roundedUp = Math.ceil(dayjs().minute() / 15) * 15;
-      const next15Time = dayjs().minute(roundedUp).second(0);
-      await sleep(next15Time.diff(dayjs()));
-
-      setState((state) => ({ ...state, isAutoFetchOn: true }));
-
-      await fetchEvents();
-    };
-    if (isLoggedIn) {
-      startFetchingEvents();
-    }
-  }, [isLoggedIn]);
-
   useInterval(
-    fetchEvents,
-    isAutoFetchOn ? 15 * 60 * 1000 : null,
+    async () => {
+      if (isLoggedIn) {
+        if (autoFetchInterval === INITIAL_FETCH_INTERVAL) {
+          const nextTickTime = calcNextTickTime();
+          setState((state) => ({ ...state, autoFetchInterval: nextTickTime.diff(dayjs()) }));
+        } else if (autoFetchInterval !== FETCH_INTERVAL) {
+          setState((state) => ({ ...state, autoFetchInterval: FETCH_INTERVAL }));
+        }
+
+        try {
+          const newCalendarEvents = await callWithRetry(getCalendarEvents);
+          if (!calendarEvents || (newCalendarEvents && !areCalendarListsEqual(calendarEvents.slice(0, 3), newCalendarEvents.slice(0, 3)))) {
+            setState((state) => ({ ...state, calendarEvents: newCalendarEvents }));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    },
+    autoFetchInterval,
   );
 
   useEffect(() => {
