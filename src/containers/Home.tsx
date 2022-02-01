@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 import { CalendarEvent, SettingsData } from '../types';
 import NeedsSetup from '../components/NeedsSetup';
@@ -66,6 +66,9 @@ function calcNextTickTime() {
 }
 
 const Home = () => {
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('sm'));
+
   const [state, setState] = useState<HomeState>({
     isLoading: true,
     isLoggedIn: false,
@@ -180,9 +183,11 @@ const Home = () => {
         />
       </Box>
       <Box display="flex">
-        <Box width={110} flexShrink={0} mr={6}>
-          <DayOfMonthIcon />
-        </Box>
+        {isLargeScreen && (
+          <Box width={110} flexShrink={0} mr={6}>
+            <DayOfMonthIcon />
+          </Box>
+        )}
         <Box flex={6} overflow="hidden">
           {calendarEvents[1] && (
             <CalendarEventDisplay
@@ -190,10 +195,12 @@ const Home = () => {
               showLocation={settings?.showLocation}
             />
           )}
-          {calendarEvents[2] && !settings?.showLocation && (
-            <CalendarEventDisplay
-              calendarEvent={calendarEvents[2]}
-            />
+          {calendarEvents[2] && !settings?.showLocation && isLargeScreen && (
+            <Box>
+              <CalendarEventDisplay
+                calendarEvent={calendarEvents[2]}
+              />
+            </Box>
           )}
         </Box>
       </Box>

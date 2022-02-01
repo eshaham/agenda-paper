@@ -21,6 +21,8 @@ jobs:
         uses: 'phips28/gh-action-bump-version@master'
         with:
           tag-prefix: 'v'
+          default: prerelease
+          preid: 'next'
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_TOKEN }}
       - name: 'Output Step'

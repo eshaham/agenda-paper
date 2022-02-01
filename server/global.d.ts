@@ -8,6 +8,7 @@ declare module 'epaperjs' {
   type RenderFunction = (page: Page, ws: WebSocketServer) => void;
 
   export const devices: {
+    [key: string]: WaveshareDevice,
     waveshare4in2: WaveshareDevice,
     waveshare4in2Horizontal: WaveshareDevice,
     waveshare4in2HorizontalGray: WaveshareDevice,
