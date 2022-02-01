@@ -110,6 +110,9 @@ Create an `.env` file under the config directory and add the GCP app credentials
 ```
 echo "GOOGLE_CLIENT_ID=<enter your app's client ID>" >> ~/.agenda-paper/.env
 echo "GOOGLE_CLIENT_SECRET=<enter your app's client secret>" >> ~/.agenda-paper/.env
+
+# this is optional, in case you want to use another display supported by ePaper.js
+echo "WAVESHARE_DEVICE_TYPE=<device_type_id>" >> ~/.agenda-paper/.env
 ```
 
 ## Run Agenda-Paper
