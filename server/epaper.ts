@@ -2,8 +2,6 @@ import { WebSocketServer } from 'ws';
 import { Page as BrowserPage } from 'puppeteer';
 import isPi from 'detect-rpi';
 
-import { getEnvVariableOrDie } from './helpers/env.helper';
-
 interface EpaperPage {
   browserPage: BrowserPage;
   display(): Promise<void>;
@@ -12,7 +10,7 @@ interface EpaperPage {
 
 export async function startEpaper() {
   if (isPi()) {
-    const deviceType = getEnvVariableOrDie('WAVESHARE_DEVICE_TYPE') || 'waveshare7in5v2';
+    const deviceType = process.env.EPAPER_DEVICE_TYPE || 'waveshare7in5v2';
     const { devices, init } = await import('epaperjs');
 
     console.log('initializing epaper');
