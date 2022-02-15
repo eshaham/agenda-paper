@@ -55,10 +55,10 @@ function areCalendarListsEqual(list1: Array<CalendarEvent>, list2: Array<Calenda
   return JSON.stringify(list1) === JSON.stringify(list2);
 }
 
-function calcNextTickTime() {
-  const currentMinute = dayjs().minute();
+function calcNextTickTime(currentTime: dayjs.Dayjs) {
+  const currentMinute = currentTime.minute();
   const nextTickMinute = (currentMinute + FETCH_INTERVAL_MINS - (currentMinute % FETCH_INTERVAL_MINS)) % 60;
-  const nextTickTime = dayjs().minute(nextTickMinute).second(0);
+  const nextTickTime = currentTime.minute(nextTickMinute).second(0);
   if (nextTickMinute < currentMinute) {
     nextTickTime.add(1, 'hour');
   }
@@ -120,9 +120,10 @@ const Home = () => {
   useInterval(
     async () => {
       if (isLoggedIn) {
-        if (autoFetchInterval === INITIAL_FETCH_INTERVAL) {
-          const nextTickTime = calcNextTickTime();
-          setState((state) => ({ ...state, autoFetchInterval: nextTickTime.diff(dayjs()) }));
+        const currentTime = dayjs();
+        if (autoFetchInterval === INITIAL_FETCH_INTERVAL || currentTime.minute() % FETCH_INTERVAL_MINS !== 0) {
+          const nextTickTime = calcNextTickTime(currentTime);
+          setState((state) => ({ ...state, autoFetchInterval: nextTickTime.diff(currentTime) }));
         } else if (autoFetchInterval !== FETCH_INTERVAL) {
           setState((state) => ({ ...state, autoFetchInterval: FETCH_INTERVAL }));
         }
